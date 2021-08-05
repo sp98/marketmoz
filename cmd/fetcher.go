@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +33,7 @@ var fetcherCmd = &cobra.Command{
 	and stores it in a database for further analysis`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("fetcher called with args : %v\n", args)
+		fetcher.StartFetcher(source, destination)
 	},
 }
 
