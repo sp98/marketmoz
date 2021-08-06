@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/sp98/marketmoz/assets"
+	"go.uber.org/zap"
 )
 
 const (
@@ -48,7 +49,7 @@ func startFileFetcher() error {
 		}
 	}
 
-	fmt.Println("total data - ", dataList)
+	Logger.Info("Data List created", zap.Int("count", len(dataList)))
 
 	return nil
 }

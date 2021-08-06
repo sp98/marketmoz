@@ -1,6 +1,12 @@
 package fetcher
 
-import "fmt"
+import (
+	"fmt"
+
+	"go.uber.org/zap"
+)
+
+var Logger *zap.Logger
 
 // StartFetcher starts a new fetching process from the provided source
 func StartFetcher(source, destination string) error {

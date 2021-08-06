@@ -16,14 +16,15 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var source string
 var destination string
+
+var Logger *zap.Logger
 
 // fetcherCmd represents the fetcher command
 var fetcherCmd = &cobra.Command{
@@ -32,7 +33,7 @@ var fetcherCmd = &cobra.Command{
 	Long: `Fetcher gets the tick data for a stock
 	and stores it in a database for further analysis`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("fetcher called with args : %v\n", args)
+		Logger.Info("fetcher called with args", zap.Strings("args", args))
 		fetcher.StartFetcher(source, destination)
 	},
 }
