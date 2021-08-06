@@ -15,8 +15,24 @@ limitations under the License.
 */
 package main
 
-import "github.com/sp98/marketmoz/cmd"
+import (
+	"time"
+
+	"github.com/sp98/marketmoz/cmd"
+	"github.com/sp98/marketmoz/pkg/fetcher"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
 
 func main() {
+	initLogger()
 	cmd.Execute()
+}
+
+func initLogger() {
+	config := zap.NewProductionConfig()
+	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
+	logger, _ := config.Build()
+	cmd.Logger = logger
+	fetcher.Logger = logger
 }
