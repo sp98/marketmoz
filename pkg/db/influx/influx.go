@@ -1,6 +1,8 @@
 package influx
 
-import influxdb2 "github.com/influxdata/influxdb-client-go"
+import (
+	"github.com/influxdata/influxdb-client-go/v2"
+)
 
 type DB struct {
 	Client influxdb2.Client

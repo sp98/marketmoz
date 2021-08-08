@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	influxdb2 "github.com/influxdata/influxdb-client-go"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
@@ -33,6 +33,7 @@ const (
 func startFileFetcher() error {
 	// Initialize Influx DB
 	db := influx.NewDB(INFLUXDB_URL, INFLUXDB_TOKEN)
+
 	writeAPI := db.Client.WriteAPIBlocking(organization, bucket)
 	defer db.Client.Close()
 
