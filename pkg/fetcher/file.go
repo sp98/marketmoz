@@ -9,6 +9,7 @@ import (
 
 	"github.com/influxdata/influxdb-client-go/v2/domain"
 	"github.com/sp98/marketmoz/assets"
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/utils"
@@ -23,18 +24,12 @@ const (
 
 var tag = map[string]string{"stock": "nifty"}
 
-const (
-	ORGANIZATION   = "marketmoz"
-	INFLUXDB_URL   = "http://localhost:8086/"
-	INFLUXDB_TOKEN = "m5txwvJXRbatNQM0AYKl9gkvtWVTkt_vIKU7IWotXQ-RAA-Q3i0wRrQfJTLvDmmn0e0GkCFJ0lZ3w8Pb-O_4uA=="
-)
-
 // startFileFetcher starts the fetching process from the file
 func startFileFetcher() error {
 
 	ctx := context.Background()
 	// Initialize Influx DB
-	db := influx.NewDB(ORGANIZATION, bucket, INFLUXDB_URL, INFLUXDB_TOKEN)
+	db := influx.NewDB(ctx, common.ORGANIZATION, bucket, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 	defer db.Client.Close()
 
 	db.Client.TasksAPI().CreateTask(ctx, &domain.Task{})

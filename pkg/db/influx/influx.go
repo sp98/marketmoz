@@ -8,14 +8,16 @@ import (
 )
 
 type DB struct {
+	Context      context.Context
 	Organization string
 	Bucket       string
 	Client       influxdb2.Client
 }
 
-func NewDB(org, bucket, url, token string) *DB {
+func NewDB(ctx context.Context, org, bucket, url, token string) *DB {
 	client := influxdb2.NewClient(url, token)
 	return &DB{
+		Context:      ctx,
 		Organization: org,
 		Bucket:       bucket,
 		Client:       client,
@@ -32,6 +34,11 @@ func (db DB) WriteFileData(measurement string, tags map[string]string,
 	}
 
 	return nil
+}
+
+func (db DB) DeleteAllData() error {
+	return db.Client.DeleteAPI().DeleteWithName(db.Context, db.Organization,
+		db.Bucket, time.Now().AddDate(-1, 0, 0), time.Now(), "")
 }
 
 func (db DB) CloseDB() {
