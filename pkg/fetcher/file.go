@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/domain"
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
@@ -16,26 +16,28 @@ import (
 )
 
 const (
-	niftyAsset   = "data/nifty.txt"
-	measurement  = "nifty-1m"
-	organization = "marketmoz"
-	bucket       = "test"
+	niftyAsset  = "data/nifty.txt"
+	measurement = "nifty-1m"
+	bucket      = "test"
 )
 
 var tag = map[string]string{"stock": "nifty"}
 
 const (
+	ORGANIZATION   = "marketmoz"
 	INFLUXDB_URL   = "http://localhost:8086/"
 	INFLUXDB_TOKEN = "m5txwvJXRbatNQM0AYKl9gkvtWVTkt_vIKU7IWotXQ-RAA-Q3i0wRrQfJTLvDmmn0e0GkCFJ0lZ3w8Pb-O_4uA=="
 )
 
 // startFileFetcher starts the fetching process from the file
 func startFileFetcher() error {
-	// Initialize Influx DB
-	db := influx.NewDB(INFLUXDB_URL, INFLUXDB_TOKEN)
 
-	writeAPI := db.Client.WriteAPIBlocking(organization, bucket)
+	ctx := context.Background()
+	// Initialize Influx DB
+	db := influx.NewDB(ORGANIZATION, bucket, INFLUXDB_URL, INFLUXDB_TOKEN)
 	defer db.Client.Close()
+
+	db.Client.TasksAPI().CreateTask(ctx, &domain.Task{})
 
 	dataBytes, err := assets.ReadFile(niftyAsset)
 	if err != nil {
@@ -78,11 +80,11 @@ func startFileFetcher() error {
 				"Close": d.Close,
 			}
 
-			p := influxdb2.NewPoint(measurement, tag, fields, d.Time)
-			err = writeAPI.WritePoint(context.Background(), p)
+			err = db.WriteFileData(measurement, tag, fields, d.Time)
 			if err != nil {
 				Logger.Error("failed to write point", zap.Object("point", &d), zap.Error(err))
 			}
+
 			dataList = append(dataList, d)
 		}
 	}

@@ -1,23 +1,37 @@
 package influx
 
 import (
-	"github.com/influxdata/influxdb-client-go/v2"
+	"context"
+	"time"
+
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 type DB struct {
-	Client influxdb2.Client
+	Organization string
+	Bucket       string
+	Client       influxdb2.Client
 }
 
-func NewDB(url string, token string) *DB {
+func NewDB(org, bucket, url, token string) *DB {
 	client := influxdb2.NewClient(url, token)
-
 	return &DB{
-		Client: client,
+		Organization: org,
+		Bucket:       bucket,
+		Client:       client,
 	}
 }
 
-func (db DB) WriteFileData(measurement string) {
+func (db DB) WriteFileData(measurement string, tags map[string]string,
+	fields map[string]interface{}, t time.Time) error {
+	writeAPI := db.Client.WriteAPIBlocking(db.Organization, db.Bucket)
+	p := influxdb2.NewPoint(measurement, tags, fields, t)
+	err := writeAPI.WritePoint(context.Background(), p)
+	if err != nil {
+		return err
+	}
 
+	return nil
 }
 
 func (db DB) CloseDB() {
