@@ -60,6 +60,7 @@ func NewTickerClient(apiKey, accessToken string) *kiteticker.Ticker {
 }
 
 func (k *Kite) StartKiteFetcher() {
+	// Assign callbacks
 	k.onConnect()
 	k.onReconnect()
 	k.onTick()
@@ -67,6 +68,7 @@ func (k *Kite) StartKiteFetcher() {
 	k.onClose()
 	k.onOrderUpdate()
 
+	// Start the connection
 	k.TClient.Serve()
 }
 
@@ -86,7 +88,6 @@ func (k *Kite) onConnect() {
 			Logger.Error("failed to add subscriptions", zap.Error(err))
 		}
 	}
-
 	k.TClient.OnConnect(onConnect)
 }
 
