@@ -13,6 +13,8 @@ func StartFetcher(source, destination string) error {
 	switch source {
 	case "file":
 		startFileFetcher()
+	case "kite":
+
 	default:
 		return fmt.Errorf("invalid source type %q", source)
 	}
