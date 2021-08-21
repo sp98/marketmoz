@@ -1,10 +1,12 @@
 package fetcher
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
 	"go.uber.org/zap"
 )
@@ -13,6 +15,7 @@ var Logger *zap.Logger
 
 // StartFetcher starts a new fetching process from the provided source
 func StartFetcher(source, destination string) error {
+	ctx := context.Background()
 	switch source {
 	case "file":
 		startFileFetcher()
@@ -27,6 +30,8 @@ func StartFetcher(source, destination string) error {
 		if err != nil {
 			return fmt.Errorf("failed to create new Kite connection client. Error %v", err)
 		}
+
+		k.Store = influx.NewDB(ctx, common.INFLUXDB_ORGANIZATION, common.INFLUXDB_URL, common.INFLUXDB_URL)
 
 		k.StartKiteFetcher()
 

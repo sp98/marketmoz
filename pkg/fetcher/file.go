@@ -28,7 +28,7 @@ func startFileFetcher() error {
 
 	ctx := context.Background()
 	// Initialize Influx DB
-	db := influx.NewDB(ctx, common.ORGANIZATION, bucket, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
+	db := influx.NewDB(ctx, common.INFLUXDB_ORGANIZATION, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 	defer db.Client.Close()
 
 	db.Client.TasksAPI().CreateTask(ctx, &domain.Task{})
@@ -39,10 +39,10 @@ func startFileFetcher() error {
 	}
 
 	dataString := string(dataBytes)
-	//dataList := []data.FileData{}
+
 	lines := strings.Split(dataString, "\n")
 	for _, line := range lines {
-		// Sleep for 1 second
+		// Sleep for 1 minute
 		time.Sleep(1 * time.Minute)
 		l := strings.Split(line, ",")
 		if len(l) > 6 {
@@ -56,15 +56,6 @@ func startFileFetcher() error {
 				return err
 			}
 
-			// d := data.FileData{
-			// 	Stock: l[0],
-			// 	Open:  open,
-			// 	High:  high,
-			// 	Low:   low,
-			// 	Close: close,
-			// 	Time:  t,
-			// }
-
 			lastPriceList := []float64{open, high, low, close}
 
 			for _, price := range lastPriceList {
@@ -73,14 +64,13 @@ func startFileFetcher() error {
 				}
 
 				Logger.Info("Tick", zap.Any("Last Price", fields["LastPrice"]))
-				err = db.WriteFileData(measurement, tag, fields, time.Now())
+				err = db.WriteFileData(bucket, measurement, tag, fields, time.Now())
 				if err != nil {
 					Logger.Error("failed to write point", zap.Any("Last Price", fields["LastPrice"]), zap.Error(err))
 				}
 				time.Sleep(5 * time.Second)
 			}
 
-			//dataList = append(dataList, d)
 		}
 	}
 

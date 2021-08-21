@@ -3,6 +3,7 @@ package kite
 import (
 	"time"
 
+	"github.com/sp98/marketmoz/pkg/db/influx"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
 	kiteticker "github.com/zerodha/gokiteconnect/v4/ticker"
@@ -23,6 +24,9 @@ type Kite struct {
 
 	// Subscriptions
 	Subscriptions []uint32
+
+	// Store represents the underlying storage for tick data
+	Store *influx.DB
 }
 
 func New(apiKey, requestToken string, subs []uint32) (*Kite, error) {
@@ -75,6 +79,7 @@ func (k *Kite) StartKiteFetcher() {
 func (k *Kite) onTick() {
 	onTick := func(tick kitemodels.Tick) {
 		Logger.Info("tick received", zap.Any("tick", tick))
+		k.storeTick(tick)
 	}
 
 	k.TClient.OnTick(onTick)
@@ -117,4 +122,9 @@ func (k *Kite) onOrderUpdate() {
 		Logger.Info("order updated", zap.String("orderID", order.OrderID))
 	}
 	k.TClient.OnOrderUpdate(onOrderUpdate)
+}
+
+func (k *Kite) storeTick(tick kitemodels.Tick) {
+	// TODO: Work on DB schema now.
+
 }
