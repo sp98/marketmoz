@@ -20,6 +20,7 @@ import (
 
 	"github.com/sp98/marketmoz/cmd"
 	"github.com/sp98/marketmoz/pkg/fetcher"
+	"github.com/sp98/marketmoz/pkg/fetcher/kite"
 	"github.com/sp98/marketmoz/pkg/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -37,4 +38,5 @@ func initLogger() {
 	cmd.Logger = logger
 	fetcher.Logger = logger
 	utils.Logger = logger
+	kite.Logger = logger
 }
