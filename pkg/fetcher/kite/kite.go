@@ -1,8 +1,10 @@
 package kite
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
@@ -125,6 +127,49 @@ func (k *Kite) onOrderUpdate() {
 }
 
 func (k *Kite) storeTick(tick kitemodels.Tick) {
-	// TODO: Work on DB schema now.
+	tags := map[string]string{}
+	bucket, err := getRTDBucket(fmt.Sprintf("%d", tick.InstrumentToken))
+	if err != nil {
+		Logger.Error("failed to get real time data bucket name", zap.Uint32("token", tick.InstrumentToken))
+		return
+	}
+	measurement := fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, tick.InstrumentToken)
+
+	fields := map[string]interface{}{
+		"LastPrice": tick.LastPrice,
+		"Volume":    tick.VolumeTraded,
+	}
+
+	err = k.Store.WriteData(bucket, measurement, tags, fields, tick.Timestamp.Time)
+	if err != nil {
+		Logger.Error("failed to write real time data", zap.Uint32("token", tick.InstrumentToken), zap.Error(err))
+	}
+}
+
+func (k *Kite) CreateDownsampleTasks() error {
+	tasks, err := GetOHLCDownSamplingTasks()
+	if err != nil {
+		return err
+	}
+	for _, task := range *tasks {
+		_, err := k.Store.WriteTask(&task)
+		if err != nil {
+			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			continue
+		}
+	}
+
+	return nil
+}
+
+// getRTDBucket returns bucket name to store real time data.
+func getRTDBucket(token string) (string, error) {
+	td := common.GetTokenDetails(token)
+	if td == nil {
+		return "", fmt.Errorf("failed to get token details for token %q", token)
+	}
+
+	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.Exchange, td.Segment)
+	return b, nil
 
 }
