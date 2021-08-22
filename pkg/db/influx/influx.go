@@ -22,7 +22,7 @@ func NewDB(ctx context.Context, org, url, token string) *DB {
 	}
 }
 
-func (db DB) WriteFileData(bucket, measurement string, tags map[string]string,
+func (db DB) WriteData(bucket, measurement string, tags map[string]string,
 	fields map[string]interface{}, t time.Time) error {
 	writeAPI := db.Client.WriteAPIBlocking(db.Organization, bucket)
 	p := influxdb2.NewPoint(measurement, tags, fields, t)

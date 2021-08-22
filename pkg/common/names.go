@@ -8,3 +8,17 @@ const (
 	KITE_API_KEY       = "KITE_API_KEY"
 	KITE_REQUEST_TOKEN = "KITE_REQUEST_TOKEN"
 )
+
+var (
+	// Buckets
+
+	// REAL_TIME_DATA_BUCKET is the bucket that stores real time data. Naming convention is
+	// <exchange>-<segment>-RTD. For example:  NSE-EQ-RTD, BSE-EQ-RTD
+	REAL_TIME_DATA_BUCKET = "%s-%s-RTD"
+
+	// Measurements
+
+	// REAL_TIME_DATA_MEASUREMENT is the measurement that stores the real time data. Naming convention is
+	// <instrument-token>-RTD. For exampe:  12123-RTD
+	REAL_TIME_DATA_MEASUREMENT = "%d-RTD"
+)

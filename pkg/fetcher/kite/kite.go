@@ -1,8 +1,11 @@
 package kite
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
@@ -125,6 +128,21 @@ func (k *Kite) onOrderUpdate() {
 }
 
 func (k *Kite) storeTick(tick kitemodels.Tick) {
-	// TODO: Work on DB schema now.
+	tags := map[string]string{}
+	bucket := data.GetBucketName(fmt.Sprintf("%d", tick.InstrumentToken))
+	if bucket == "" {
+		Logger.Error("failed to get bucket name", zap.Uint32("token", tick.InstrumentToken))
+		return
+	}
+	measurement := fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, tick.InstrumentToken)
 
+	fields := map[string]interface{}{
+		"LastPrice": tick.LastPrice,
+		"Volume":    tick.VolumeTraded,
+	}
+
+	err := k.Store.WriteData(bucket, measurement, tags, fields, tick.Timestamp.Time)
+	if err != nil {
+		Logger.Error("failed to write real time data", zap.Uint32("token", tick.InstrumentToken), zap.Error(err))
+	}
 }
