@@ -146,6 +146,22 @@ func (k *Kite) storeTick(tick kitemodels.Tick) {
 	}
 }
 
+func (k *Kite) CreateDownsampleTasks() error {
+	tasks, err := GetOHLCDownSamplingTasks()
+	if err != nil {
+		return err
+	}
+	for _, task := range *tasks {
+		_, err := k.Store.WriteTask(&task)
+		if err != nil {
+			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			continue
+		}
+	}
+
+	return nil
+}
+
 // getRTDBucket returns bucket name to store real time data.
 func getRTDBucket(token string) (string, error) {
 	td := common.GetTokenDetails(token)

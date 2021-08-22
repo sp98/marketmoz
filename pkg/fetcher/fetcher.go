@@ -23,6 +23,7 @@ func StartFetcher(source, destination string) error {
 		apiKey := os.Getenv(common.KITE_API_KEY)
 		requestToken := os.Getenv(common.KITE_REQUEST_TOKEN)
 		if apiKey == "" || requestToken == "" {
+			Logger.Error("failed to get Kite API key or request token from evn")
 			return fmt.Errorf("failed to get Kite API key or request token from evn. API Key: %q. Request Token: %q", apiKey, requestToken)
 		}
 
@@ -31,8 +32,12 @@ func StartFetcher(source, destination string) error {
 			return fmt.Errorf("failed to create new Kite connection client. Error %v", err)
 		}
 
-		k.Store = influx.NewDB(ctx, common.INFLUXDB_ORGANIZATION, common.INFLUXDB_URL, common.INFLUXDB_URL)
-
+		k.Store = influx.NewDB(ctx, common.INFLUXDB_ORGANIZATION, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
+		err = k.CreateDownsampleTasks()
+		if err != nil {
+			Logger.Error("failed to create downsample tasks", zap.Error(err))
+			return fmt.Errorf("failed to create downsample tasks. Error %v", err)
+		}
 		k.StartKiteFetcher()
 
 	default:

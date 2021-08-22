@@ -34,7 +34,6 @@ func (db DB) WriteData(bucket, measurement string, tags map[string]string,
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

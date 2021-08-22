@@ -1,6 +1,8 @@
 # github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 ## explicit
 github.com/araddon/dateparse
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/deepmap/oapi-codegen v1.6.0
 github.com/deepmap/oapi-codegen/pkg/runtime
 github.com/deepmap/oapi-codegen/pkg/types
@@ -49,6 +51,8 @@ github.com/pelletier/go-toml
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/spf13/afero v1.6.0
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -64,6 +68,9 @@ github.com/spf13/pflag
 # github.com/spf13/viper v1.8.1
 ## explicit
 github.com/spf13/viper
+# github.com/stretchr/testify v1.7.0
+## explicit
+github.com/stretchr/testify/assert
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
 # github.com/zerodha/gokiteconnect/v4 v4.0.1
@@ -95,3 +102,5 @@ golang.org/x/text/unicode/norm
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+gopkg.in/yaml.v3
