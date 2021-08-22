@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/sp98/marketmoz/cmd"
+	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
 	"github.com/sp98/marketmoz/pkg/utils"
@@ -39,4 +40,5 @@ func initLogger() {
 	fetcher.Logger = logger
 	utils.Logger = logger
 	kite.Logger = logger
+	influx.Logger = logger
 }

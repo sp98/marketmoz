@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/sp98/marketmoz/pkg/common"
-	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
@@ -129,9 +128,9 @@ func (k *Kite) onOrderUpdate() {
 
 func (k *Kite) storeTick(tick kitemodels.Tick) {
 	tags := map[string]string{}
-	bucket := data.GetBucketName(fmt.Sprintf("%d", tick.InstrumentToken))
-	if bucket == "" {
-		Logger.Error("failed to get bucket name", zap.Uint32("token", tick.InstrumentToken))
+	bucket, err := getRTDBucket(fmt.Sprintf("%d", tick.InstrumentToken))
+	if err != nil {
+		Logger.Error("failed to get real time data bucket name", zap.Uint32("token", tick.InstrumentToken))
 		return
 	}
 	measurement := fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, tick.InstrumentToken)
@@ -141,8 +140,20 @@ func (k *Kite) storeTick(tick kitemodels.Tick) {
 		"Volume":    tick.VolumeTraded,
 	}
 
-	err := k.Store.WriteData(bucket, measurement, tags, fields, tick.Timestamp.Time)
+	err = k.Store.WriteData(bucket, measurement, tags, fields, tick.Timestamp.Time)
 	if err != nil {
 		Logger.Error("failed to write real time data", zap.Uint32("token", tick.InstrumentToken), zap.Error(err))
 	}
+}
+
+// getRTDBucket returns bucket name to store real time data.
+func getRTDBucket(token string) (string, error) {
+	td := common.GetTokenDetails(token)
+	if td == nil {
+		return "", fmt.Errorf("failed to get token details for token %q", token)
+	}
+
+	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.Exchange, td.Segment)
+	return b, nil
+
 }

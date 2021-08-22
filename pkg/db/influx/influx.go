@@ -5,6 +5,8 @@ import (
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	domain "github.com/influxdata/influxdb-client-go/v2/domain"
+	"go.uber.org/zap"
 )
 
 type DB struct {
@@ -12,6 +14,8 @@ type DB struct {
 	Organization string
 	Client       influxdb2.Client
 }
+
+var Logger *zap.Logger
 
 func NewDB(ctx context.Context, org, url, token string) *DB {
 	client := influxdb2.NewClient(url, token)
@@ -32,6 +36,10 @@ func (db DB) WriteData(bucket, measurement string, tags map[string]string,
 	}
 
 	return nil
+}
+
+func (db DB) WriteTask(task *domain.Task) (*domain.Task, error) {
+	return db.Client.TasksAPI().CreateTask(db.Context, task)
 }
 
 func (db DB) DeleteBucket(bucket string) error {

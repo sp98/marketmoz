@@ -1,10 +1,4 @@
-package data
-
-import (
-	"fmt"
-
-	"github.com/sp98/marketmoz/pkg/common"
-)
+package common
 
 type TokenDetails struct {
 	Exchange       string
@@ -26,12 +20,14 @@ var tokenMap = map[string]TokenDetails{
 	},
 }
 
-func GetBucketName(token string) string {
-	tm, ok := tokenMap[token]
-	if !ok {
-		return ""
-	}
+func GetTokenMap() *map[string]TokenDetails {
+	return &tokenMap
+}
 
-	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, tm.Exchange, tm.Segment)
-	return b
+func GetTokenDetails(token string) *TokenDetails {
+	td, ok := tokenMap[token]
+	if !ok {
+		return nil
+	}
+	return &td
 }

@@ -14,11 +14,19 @@ var (
 
 	// REAL_TIME_DATA_BUCKET is the bucket that stores real time data. Naming convention is
 	// <exchange>-<segment>-RTD. For example:  NSE-EQ-RTD, BSE-EQ-RTD
-	REAL_TIME_DATA_BUCKET = "%s-%s-RTD"
+	REAL_TIME_DATA_BUCKET = "RTD-%s-%s"
 
 	// Measurements
 
 	// REAL_TIME_DATA_MEASUREMENT is the measurement that stores the real time data. Naming convention is
 	// <instrument-token>-RTD. For exampe:  12123-RTD
-	REAL_TIME_DATA_MEASUREMENT = "%d-RTD"
+	REAL_TIME_DATA_MEASUREMENT = "RTD-%d"
+
+	// OHLC_DOWNSAMPLE_BUCKET is the bucket containing the downsampled OHLC data for different time period.
+	// Naming convention is OHLC-<Exchange>-<SEGMENT>-<Time>. For example: OHLC-NSE-EQ-1m
+	OHLC_DOWNSAMPLE_BUCKET = "OHLC-%s-%s-%s"
+
+	// OHLC_DOWNSAMPLE_MEASUREMENT is the measurement to store downsampled OHLC data for a token.
+	// Naming convention is OHLC-<Instruement-Token>. For example: OHLC-12345
+	OHLC_DOWNSAMPLE_MEASUREMENT = "OHLC-%s"
 )
