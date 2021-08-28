@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ohlcDownSampleTaskAsset = "scripts/ohlc-ds.flux"
+	ohlcDownSampleTaskAsset = "tasks/ohlc-ds.flux"
 	downsamplePeriods       = []string{"1m", "3m", "5m", "10m"}
 )
 
@@ -45,7 +45,7 @@ func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 			)
 
 			if err != nil {
-				Logger.Error("failed to get data from task file", zap.String("filename", ohlcDownSampleTaskAsset))
+				Logger.Error("failed to get data from task file", zap.String("filename", ohlcDownSampleTaskAsset), zap.Error(err))
 				return &ohlcTasks, fmt.Errorf("failed to get data fro task file %q", ohlcDownSampleTaskAsset)
 			}
 

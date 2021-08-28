@@ -18,7 +18,11 @@ package main
 import (
 	"time"
 
-	"github.com/sp98/marketmoz/cmd"
+	"github.com/sp98/marketmoz/cmd/delete"
+	"github.com/sp98/marketmoz/cmd/get"
+	"github.com/sp98/marketmoz/cmd/marketmoz"
+	"github.com/sp98/marketmoz/cmd/start"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
@@ -29,16 +33,27 @@ import (
 
 func main() {
 	initLogger()
-	cmd.Execute()
+	addCommands()
+	marketmoz.Execute()
 }
 
+func addCommands() {
+	marketmoz.RootCmd.AddCommand(
+		start.StartCmd,
+		delete.DeleteCmd,
+		get.GetCmd,
+	)
+
+}
 func initLogger() {
 	config := zap.NewProductionConfig()
 	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
 	logger, _ := config.Build()
-	cmd.Logger = logger
+
+	start.Logger = logger
 	fetcher.Logger = logger
 	utils.Logger = logger
 	kite.Logger = logger
 	influx.Logger = logger
+	data.Logger = logger
 }

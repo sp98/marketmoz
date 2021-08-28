@@ -1,9 +1,8 @@
-package cmd
+package delete
 
 import (
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
 
 var organization string
@@ -17,13 +16,13 @@ var dataCmd = &cobra.Command{
 Data represents the influx data in the application`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := data.Delete(organization, bucket); err != nil {
-			Logger.Fatal("failed to delete data", zap.Error(err))
+			//log.Fatal("failed to delete data", zap.Error(err))
 		}
 	},
 }
 
 func init() {
-	deleteCmd.AddCommand(dataCmd)
+	DeleteCmd.AddCommand(dataCmd)
 	dataCmd.Flags().StringVarP(&organization, "organization", "o", "", "influxdb organization")
 	dataCmd.MarkFlagRequired("organization")
 	dataCmd.Flags().StringVarP(&bucket, "bucket", "b", "", "influxdb bucket")

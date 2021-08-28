@@ -5,6 +5,7 @@ import (
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	domain "github.com/influxdata/influxdb-client-go/v2/domain"
 	"go.uber.org/zap"
 )
@@ -35,6 +36,15 @@ func (db DB) WriteData(bucket, measurement string, tags map[string]string,
 		return err
 	}
 	return nil
+}
+
+func (db DB) GetData(query string) (*api.QueryTableResult, error) {
+	queryAPI := db.Client.QueryAPI(db.Organization)
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (db DB) WriteTask(task *domain.Task) (*domain.Task, error) {

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
+package get
 
 import (
 	"fmt"
@@ -21,17 +21,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// deleteCmd represents the delete command
-var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete performs the delete operations",
-	Long: `
-Delete performs various delete operations in the application.`,
+// GetCmd represents the get command
+var GetCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Get information",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
+		fmt.Println("get called")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(deleteCmd)
 }

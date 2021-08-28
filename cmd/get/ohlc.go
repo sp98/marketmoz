@@ -1,0 +1,54 @@
+/*
+Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+package get
+
+import (
+	"github.com/sp98/marketmoz/pkg/data"
+	"github.com/spf13/cobra"
+)
+
+var organization string
+var token string
+var cadence string
+var exchange string
+var segment string
+
+// ohlcCmd represents the ohlc command
+var ohlcCmd = &cobra.Command{
+	Use:   "ohlc",
+	Short: "Get OHLC data",
+	Run: func(cmd *cobra.Command, args []string) {
+		data := data.NewOHLCData(organization, token, cadence,
+			exchange, segment)
+		data.GetOHLC()
+	},
+}
+
+func init() {
+	GetCmd.AddCommand(ohlcCmd)
+
+	ohlcCmd.Flags().StringVarP(&organization, "organization", "o", "", "influxdb organization")
+	ohlcCmd.MarkFlagRequired("organization")
+	ohlcCmd.Flags().StringVarP(&token, "token", "t", "", "instruement token")
+	ohlcCmd.MarkFlagRequired("token")
+	// TODO: limit the values candence can have. For example, only use 1m, 3m, 5m, 1d, 1w, etc.
+	ohlcCmd.Flags().StringVarP(&cadence, "cadence", "c", "", "cadence")
+	ohlcCmd.MarkFlagRequired("cadence")
+	ohlcCmd.Flags().StringVarP(&exchange, "exchange", "e", "", "exchange")
+	ohlcCmd.MarkFlagRequired("exchange")
+	ohlcCmd.Flags().StringVarP(&segment, "segment", "s", "", "segment")
+	ohlcCmd.MarkFlagRequired("segment")
+}
