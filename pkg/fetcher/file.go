@@ -74,8 +74,6 @@ func startFileFetcher() error {
 		}
 	}
 
-	//Logger.Info("Data List created", zap.Int("count", len(dataList)))
-
 	return nil
 }
 
