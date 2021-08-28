@@ -1,4 +1,4 @@
-package cmd
+package start
 
 import (
 	"github.com/sp98/marketmoz/pkg/fetcher"
@@ -24,7 +24,7 @@ var fetcherCmd = &cobra.Command{
 }
 
 func init() {
-	startCmd.AddCommand(fetcherCmd)
+	StartCmd.AddCommand(fetcherCmd)
 
 	// Set flags
 	fetcherCmd.Flags().StringVarP(&source, "source", "s", "", "data source to fetch tick data")
