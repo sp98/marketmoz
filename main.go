@@ -22,6 +22,7 @@ import (
 	"github.com/sp98/marketmoz/cmd/get"
 	"github.com/sp98/marketmoz/cmd/marketmoz"
 	"github.com/sp98/marketmoz/cmd/start"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
@@ -48,8 +49,11 @@ func initLogger() {
 	config := zap.NewProductionConfig()
 	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
 	logger, _ := config.Build()
+
+	start.Logger = logger
 	fetcher.Logger = logger
 	utils.Logger = logger
 	kite.Logger = logger
 	influx.Logger = logger
+	data.Logger = logger
 }

@@ -38,8 +38,8 @@ func (db DB) WriteData(bucket, measurement string, tags map[string]string,
 	return nil
 }
 
-func (db DB) GetData(org, query string) (*api.QueryTableResult, error) {
-	queryAPI := db.Client.QueryAPI(org)
+func (db DB) GetData(query string) (*api.QueryTableResult, error) {
+	queryAPI := db.Client.QueryAPI(db.Organization)
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
 		return nil, err

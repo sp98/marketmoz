@@ -16,21 +16,24 @@ limitations under the License.
 package get
 
 import (
-	"fmt"
-
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/spf13/cobra"
 )
 
 var organization string
 var token string
 var cadence string
+var exchange string
+var segment string
 
 // ohlcCmd represents the ohlc command
 var ohlcCmd = &cobra.Command{
 	Use:   "ohlc",
 	Short: "Get OHLC data",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ohlc called")
+		data := data.NewOHLCData(organization, token, cadence,
+			exchange, segment)
+		data.GetOHLC()
 	},
 }
 
@@ -41,5 +44,11 @@ func init() {
 	ohlcCmd.MarkFlagRequired("organization")
 	ohlcCmd.Flags().StringVarP(&token, "token", "t", "", "instruement token")
 	ohlcCmd.MarkFlagRequired("token")
+	// TODO: limit the values candence can have. For example, only use 1m, 3m, 5m, 1d, 1w, etc.
 	ohlcCmd.Flags().StringVarP(&cadence, "cadence", "c", "", "cadence")
+	ohlcCmd.MarkFlagRequired("cadence")
+	ohlcCmd.Flags().StringVarP(&exchange, "exchange", "e", "", "exchange")
+	ohlcCmd.MarkFlagRequired("exchange")
+	ohlcCmd.Flags().StringVarP(&segment, "segment", "s", "", "segment")
+	ohlcCmd.MarkFlagRequired("segment")
 }
