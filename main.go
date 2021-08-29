@@ -26,6 +26,7 @@ import (
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
+	"github.com/sp98/marketmoz/pkg/strategies/pvt"
 	"github.com/sp98/marketmoz/pkg/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -56,4 +57,5 @@ func initLogger() {
 	kite.Logger = logger
 	influx.Logger = logger
 	data.Logger = logger
+	pvt.Logger = logger
 }
