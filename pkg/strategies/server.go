@@ -15,7 +15,8 @@ func StartServer(name string) error {
 	// Add handlers
 	switch name {
 	case PVT_STRATEGY:
-		http.HandleFunc(fmt.Sprintf("/%s", name), pvt.Handler)
+		pvt.StrategyExample3()
+		//http.HandleFunc(fmt.Sprintf("/%s", name), pvt.Handler)
 	default:
 		return fmt.Errorf("invalid strategy %q", name)
 	}

@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	ms "github.com/mitchellh/mapstructure"
@@ -33,7 +32,7 @@ type OHLC struct {
 	High   float64
 	Low    float64
 	Close  float64
-	Time   time.Duration
+	Time   int64
 	Volume float64
 }
 
@@ -66,9 +65,14 @@ func (o OHLCData) SetExchange(exchange string) OHLCData {
 	o.exchange = exchange
 	return o
 }
+
 func (o OHLCData) SetSegment(segment string) OHLCData {
 	o.segment = segment
 	return o
+}
+
+func (o OHLCData) GetData() *[]OHLC {
+	return o.data
 }
 
 func (o OHLCData) GetBucket() string {

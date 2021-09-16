@@ -50,6 +50,9 @@ func startFileFetcher() error {
 			high, _ := strconv.ParseFloat(l[4], 64)
 			low, _ := strconv.ParseFloat(l[5], 64)
 			close, _ := strconv.ParseFloat(l[6], 64)
+
+			// keep string to use with techan
+
 			_, err := parseTime(l[1], l[2])
 			if err != nil {
 				Logger.Error("failed to parse time", zap.Error(err))

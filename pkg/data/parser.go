@@ -22,12 +22,8 @@ func parse(in *api.QueryTableResult) ([]map[string]interface{}, error) {
 			out = append(out, r)
 		} else {
 			out[index][currentField] = in.Record().Value()
+			out[index]["Time"] = in.Record().Time().Local().Unix()
 		}
-
-		// Notice when group key has changed
-		// if in.TableChanged() {
-		// 	//fmt.Printf("table: %s\n", result.TableMetadata().String())
-		// }
 
 		index += 1
 	}
