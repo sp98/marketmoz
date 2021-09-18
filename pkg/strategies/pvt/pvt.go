@@ -6,6 +6,7 @@ import (
 
 	"github.com/sdcoffey/big"
 	"github.com/sp98/marketmoz/pkg/data"
+	"github.com/sp98/marketmoz/pkg/utils"
 	"github.com/sp98/techan"
 )
 
@@ -148,4 +149,61 @@ func StrategyExample3() {
 	}
 
 	fmt.Println(strategy.ShouldEnter(index-1, record)) // returns false
+}
+
+func getSeriesFromCSV(records [][]string) (*techan.TimeSeries, error) {
+
+	series := techan.NewTimeSeries()
+
+	for _, record := range records {
+		date, err := time.Parse("2006-01-02", record[0])
+		if err != nil {
+			return nil, err
+		}
+		period := techan.NewTimePeriod(date, time.Hour*24)
+		candle := techan.NewCandle(period)
+		candle.OpenPrice = big.NewFromString(record[1])
+		candle.MaxPrice = big.NewFromString(record[2])
+		candle.MinPrice = big.NewFromString(record[3])
+		candle.ClosePrice = big.NewFromString(record[4])
+		candle.Volume = big.NewFromString(record[6])
+
+		series.AddCandle(candle)
+
+	}
+
+	return series, nil
+}
+
+func StrategyExample4() {
+	records, err := utils.CSVReader("./assets/data/RELIANCE.NS.csv")
+	if err != nil {
+		fmt.Println("failed to read records. Error : ", err)
+		return
+	}
+
+	series, err := getSeriesFromCSV(records)
+	if err != nil {
+		fmt.Println("failed to get series. Error:: ", err)
+		return
+	}
+
+	closePrices := techan.NewClosePriceIndicator(series)
+	volume := techan.NewVolumeIndicator(series)
+
+	pvtIndicator := techan.NewPriceVolumeTrendIndicator(closePrices, volume, 1)
+
+	// subtract 2 because first row in the csv is header.
+	fmt.Println(pvtIndicator.Calculate(len(records) - 1))
+
+	// // RSI
+	// rsiIndicator := techan.NewRelativeStrengthIndexIndicator(closePrices, 14)
+	// fmt.Println("RSI - ", rsiIndicator.Calculate(len(records)-1))
+
+	// macdIndicator := techan.NewMACDIndicator(closePrices, 12, 26)
+	// fmt.Println("MACD - ", macdIndicator.Calculate(len(records)-1))
+
+	// macdHistogramIndicator := techan.NewMACDHistogramIndicator(techan.NewMACDIndicator(closePrices, 12, 26), 9)
+	// fmt.Println("MACD Histogram - ", macdHistogramIndicator.Calculate(len(records)-1))
+
 }
