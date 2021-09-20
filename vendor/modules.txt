@@ -54,6 +54,12 @@ github.com/pelletier/go-toml
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/sdcoffey/big v0.7.0
+## explicit
+github.com/sdcoffey/big
+# github.com/sp98/techan v0.12.2-0.20210919145811-d89e3298a92d
+## explicit
+github.com/sp98/techan
 # github.com/spf13/afero v1.6.0
 github.com/spf13/afero
 github.com/spf13/afero/mem

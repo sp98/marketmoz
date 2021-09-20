@@ -1,4 +1,4 @@
-input = {bucket: "test", measurement: "nifty-1m", every: 3m}
+input = {bucket: "test", measurement: "nifty-1m", every: 30m}
 
 from(bucket: input.bucket)
     |> range(start: -input.every)
