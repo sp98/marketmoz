@@ -255,6 +255,8 @@ github.com/smartystreets/goconvey v1.6.4 h1:fv0U8FUIMPNf1L9lnHLvLhgicrIVChEkdzIK
 github.com/smartystreets/goconvey v1.6.4/go.mod h1:syvi0/a8iFYH4r/RixwvyeAJjdLS9QV7WQ/tjFTllLA=
 github.com/sp98/techan v0.12.2-0.20210915170231-351821372d35 h1:XojwW6v8LqwinIdwOhGOnwPAgM+EvmNw+prRwqfpKrc=
 github.com/sp98/techan v0.12.2-0.20210915170231-351821372d35/go.mod h1:S/fUIYocoIt8QdiMON7GmUyvOhorIRs8Gm4uDD0773c=
+github.com/sp98/techan v0.12.2-0.20210919145811-d89e3298a92d h1:KmKYkTz8uSmW/HKgn3fvMfoSshLSJyz0itinc+fkBp8=
+github.com/sp98/techan v0.12.2-0.20210919145811-d89e3298a92d/go.mod h1:S/fUIYocoIt8QdiMON7GmUyvOhorIRs8Gm4uDD0773c=
 github.com/spf13/afero v1.6.0 h1:xoax2sJ2DT8S8xA2paPFjDCScCNeWsg75VG0DLRreiY=
 github.com/spf13/afero v1.6.0/go.mod h1:Ai8FlHk4v/PARR026UzYexafAt9roJ7LcLMAmO6Z93I=
 github.com/spf13/cast v1.3.1 h1:nFm6S0SMdyzrzcmThSipiEubIDy8WEXKNZ0UOgiRpng=
