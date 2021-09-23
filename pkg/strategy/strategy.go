@@ -1,6 +1,6 @@
-package stragegy
+package strategy
 
-import "github.com/sp98/marketmoz/pkg/trade/rule"
+import "github.com/sp98/marketmoz/pkg/rule"
 
 type Strategy interface {
 	ShouldEnterLong(index int) bool

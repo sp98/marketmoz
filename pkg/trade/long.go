@@ -7,8 +7,10 @@ type EnterLong struct {
 }
 
 func (el *EnterLong) Execute(t *Trade) {
-	t.NextPosition = "EnterLong"
-	fmt.Printf("%+v\n", t)
+	fmt.Println("Flow: Enter Long Position")
+
+	// Validation EnterLong rules if NextPosition is EnterLong
+	// If false, reset NextPosition
 
 	if el.next != nil {
 		el.next.Execute(t)
@@ -24,8 +26,10 @@ type ExitLong struct {
 }
 
 func (el *ExitLong) Execute(t *Trade) {
-	t.NextPosition = "ExitLong"
-	fmt.Printf("%+v\n", t)
+	fmt.Println("Flow: Exit Long Position")
+
+	// Validation ExitLong rules if NextPosition is ExitLong
+	// If false, reset NextPosition
 
 	if el.next != nil {
 		el.next.Execute(t)

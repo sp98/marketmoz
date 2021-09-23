@@ -7,8 +7,9 @@ type EnterShort struct {
 }
 
 func (es *EnterShort) Execute(t *Trade) {
-	t.NextPosition = "EnterShort"
-	fmt.Printf("%+v\n", t)
+	fmt.Println("Flow: Enter Short Position")
+	// Validation EnterShort rules if NextPosition is EnterShort
+	// If false, reset NextPosition
 
 	if es.next != nil {
 		es.next.Execute(t)
@@ -24,8 +25,10 @@ type ExitShort struct {
 }
 
 func (es *ExitShort) Execute(t *Trade) {
-	t.NextPosition = "ExitShort"
-	fmt.Printf("%+v\n", t)
+	fmt.Println("Flow: Exit Short Position")
+
+	// Validation ExitShort rules if NextPosition is ExitShort
+	// If false, reset NextPosition
 
 	if es.next != nil {
 		es.next.Execute(t)

@@ -15,7 +15,10 @@ func Start(name string) error {
 	case PVT_STRATEGY:
 		// exampleStrategy()
 
+		order := &trade.Order{}
+
 		exitShort := &trade.ExitShort{}
+		exitShort.SetNext(order)
 		exitLong := &trade.ExitLong{}
 		exitLong.SetNext(exitShort)
 
@@ -24,13 +27,16 @@ func Start(name string) error {
 		enterLong.SetNext(enterShort)
 		enterShort.SetNext(exitLong)
 
-		ohlc := trade.OHLC{}
-		ohlc.SetNext(enterLong)
+		position := &trade.Position{}
+		position.SetNext(enterLong)
 
-		t := trade.Trade{Name: "PVT"}
-		ohlc.Execute(&t)
+		rules := trade.Rules{}
+		rules.SetNext(position)
 
-		fmt.Printf("%+v", t)
+		t := &trade.Trade{Name: "PVT"}
+		rules.Execute(t)
+
+		fmt.Printf("%+v \n", t)
 
 	default:
 		return fmt.Errorf("invalid strategy %q", name)
