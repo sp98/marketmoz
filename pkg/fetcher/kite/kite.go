@@ -164,7 +164,7 @@ func (k *Kite) CreateDownsampleTasks() error {
 
 // getRTDBucket returns bucket name to store real time data.
 func getRTDBucket(token string) (string, error) {
-	td := common.GetTokenDetails(token)
+	td := common.GetInstrumentDetails(token)
 	if td == nil {
 		return "", fmt.Errorf("failed to get token details for token %q", token)
 	}
