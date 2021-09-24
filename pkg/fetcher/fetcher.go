@@ -21,13 +21,14 @@ func StartFetcher(source, destination string) error {
 		startFileFetcher()
 	case "kite":
 		apiKey := os.Getenv(common.KITE_API_KEY)
+		apiSecret := os.Getenv(common.KITE_API_SECRET)
 		requestToken := os.Getenv(common.KITE_REQUEST_TOKEN)
-		if apiKey == "" || requestToken == "" {
-			Logger.Error("failed to get Kite API key or request token from evn")
+		if apiKey == "" || requestToken == "" || apiSecret == "" {
+			Logger.Error("failed to get Kite API key, Secret or request token from evn")
 			return fmt.Errorf("failed to get Kite API key or request token from evn. API Key: %q. Request Token: %q", apiKey, requestToken)
 		}
 
-		k, err := kite.New(apiKey, requestToken, []uint32{})
+		k, err := kite.New(apiKey, apiSecret, requestToken, []uint32{})
 		if err != nil {
 			return fmt.Errorf("failed to create new Kite connection client. Error %v", err)
 		}

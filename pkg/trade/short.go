@@ -8,8 +8,13 @@ type EnterShort struct {
 
 func (es *EnterShort) Execute(t *Trade) {
 	fmt.Println("Flow: Enter Short Position")
-	// Validation EnterShort rules if NextPosition is EnterShort
-	// If false, reset NextPosition
+
+	if t.NextPosition == "EnterShort" {
+		// Reset NextPosition of Short entry rules don't match
+		if !t.Strategy.ShouldEnterShort(t.Series.LastIndex()) {
+			t.NextPosition = ""
+		}
+	}
 
 	if es.next != nil {
 		es.next.Execute(t)
@@ -27,8 +32,10 @@ type ExitShort struct {
 func (es *ExitShort) Execute(t *Trade) {
 	fmt.Println("Flow: Exit Short Position")
 
-	// Validation ExitShort rules if NextPosition is ExitShort
-	// If false, reset NextPosition
+	if t.NextPosition == "ExitShort" {
+		// Validation ExitShort rules if NextPosition is ExitShort
+		// If false, reset NextPosition
+	}
 
 	if es.next != nil {
 		es.next.Execute(t)

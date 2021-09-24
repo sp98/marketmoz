@@ -15,7 +15,7 @@ func (r *Rules) Execute(t *Trade) {
 	fmt.Println("Flow: Set Rules")
 	// Get OHLC data and build the strategy rules
 	series := techan.TimeSeries{}
-	t.Strategy = strategy.PVTStrategyRules(&series)
+	t.SetStrategy(strategy.PVTStrategyRules(&series))
 
 	if r.next != nil {
 		r.next.Execute(t)

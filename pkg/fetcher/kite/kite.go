@@ -31,8 +31,8 @@ type Kite struct {
 	Store *influx.DB
 }
 
-func New(apiKey, requestToken string, subs []uint32) (*Kite, error) {
-	c, user, err := NewKiteConnectClient(apiKey, requestToken)
+func New(apiKey, apiSecret, requestToken string, subs []uint32) (*Kite, error) {
+	c, user, err := NewKiteConnectClient(apiKey, apiSecret, requestToken)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func New(apiKey, requestToken string, subs []uint32) (*Kite, error) {
 
 }
 
-func NewKiteConnectClient(apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
-	kc := kiteconnect.New(apiSecret)
+func NewKiteConnectClient(apiKey, apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
+	kc := kiteconnect.New(apiKey)
 	// Get user details and access token
 	data, err := kc.GenerateSession(requestToken, apiSecret)
 	if err != nil {
