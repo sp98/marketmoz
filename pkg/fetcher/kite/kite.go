@@ -31,8 +31,8 @@ type Kite struct {
 	Store *influx.DB
 }
 
-func New(apiKey, requestToken string, subs []uint32) (*Kite, error) {
-	c, user, err := NewKiteConnectClient(apiKey, requestToken)
+func New(apiKey, apiSecret, requestToken string, subs []uint32) (*Kite, error) {
+	c, user, err := NewKiteConnectClient(apiKey, apiSecret, requestToken)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func New(apiKey, requestToken string, subs []uint32) (*Kite, error) {
 
 }
 
-func NewKiteConnectClient(apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
-	kc := kiteconnect.New(apiSecret)
+func NewKiteConnectClient(apiKey, apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
+	kc := kiteconnect.New(apiKey)
 	// Get user details and access token
 	data, err := kc.GenerateSession(requestToken, apiSecret)
 	if err != nil {
@@ -164,7 +164,7 @@ func (k *Kite) CreateDownsampleTasks() error {
 
 // getRTDBucket returns bucket name to store real time data.
 func getRTDBucket(token string) (string, error) {
-	td := common.GetTokenDetails(token)
+	td := common.GetInstrumentDetails(token)
 	if td == nil {
 		return "", fmt.Errorf("failed to get token details for token %q", token)
 	}

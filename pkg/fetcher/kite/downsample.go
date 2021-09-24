@@ -17,7 +17,7 @@ var (
 
 func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 	ohlcTasks := []domain.Task{}
-	tokens := common.GetTokenMap()
+	tokens := common.GetInstrumentMap()
 
 	for tokenID, tokenDetail := range *tokens {
 

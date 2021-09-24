@@ -16,3 +16,9 @@ func ToTime(in string) (time.Time, error) {
 	}
 	return t, nil
 }
+
+func StartTimeAndLoc() (time.Time, *time.Location) {
+	now := time.Now()
+	yyyy, mm, dd := now.Date()
+	return time.Date(yyyy, mm, dd, 15, 41, 2, 0, now.Location()), now.Location()
+}
