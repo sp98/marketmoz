@@ -68,6 +68,7 @@ func (t *Trade) SetInstrument(instrument common.Instrument) {
 
 func Start(name string) error {
 
+	//strategy.ExampleStrategy()
 	// Get kite connect client
 	apiKey := os.Getenv(common.KITE_API_KEY)
 	apiSecret := os.Getenv(common.KITE_API_SECRET)
