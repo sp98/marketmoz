@@ -76,7 +76,7 @@ func getSeriesFromCSV(records [][]string) (*techan.TimeSeries, error) {
 	return series, nil
 }
 
-func exampleStrategy() {
+func ExampleStrategy() {
 	records, err := utils.CSVReader("./assets/data/RELIANCE.NS.csv")
 	if err != nil {
 		fmt.Println("failed to read records. Error : ", err)
@@ -115,4 +115,25 @@ func exampleStrategy() {
 
 	stochasticSlowIndicator := techan.NewSlowStochasticIndicator(stochasticFastIndicator, 3)
 	fmt.Println("slow Stochastic Indicator", stochasticSlowIndicator.Calculate(len(records)-1))
+
+	pivotPoint := techan.NewPivoPointIndicator(series, techan.DAY)
+	fmt.Println("pivot point indicator", pivotPoint.Calculate(len(records)-1))
+
+	pivotLevelR1 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.RESISTANCE_1)
+	fmt.Println("pivot level R1", pivotLevelR1.Calculate(len(records)-1))
+
+	pivotLevelR2 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.RESISTANCE_2)
+	fmt.Println("pivot level R2", pivotLevelR2.Calculate(len(records)-1))
+
+	pivotLevelR3 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.RESISTANCE_3)
+	fmt.Println("pivot level R3", pivotLevelR3.Calculate(len(records)-1))
+
+	pivotLevelS1 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.SUPPORT_1)
+	fmt.Println("pivot level S1", pivotLevelS1.Calculate(len(records)-1))
+
+	pivotLevelS2 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.SUPPORT_2)
+	fmt.Println("pivot level S2", pivotLevelS2.Calculate(len(records)-1))
+
+	pivotLevelS3 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.SUPPORT_3)
+	fmt.Println("pivot level S3", pivotLevelS3.Calculate(len(records)-1))
 }
