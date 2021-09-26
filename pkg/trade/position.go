@@ -9,13 +9,25 @@ type Position struct {
 func (p *Position) Execute(t *Trade) {
 	fmt.Println("Flow: Get Position")
 
-	/*
-		TODO: get current position of the insturment using the broker client.
-		Set NextPosition to:
-			EnterLong:  If no position found.
-			ExitLong: If Buy position exists
-			ExitShort: If Sell Position exits.
-	*/
+	orders, err := t.KClient.GetOrders()
+	if err != nil {
+		fmt.Println("failed to get orders")
+		return
+	}
+
+	// Set next position to ENTER_LONG
+	t.nxtPos = ENTER_LONG
+	for _, order := range orders {
+		if order.InstrumentToken == t.Instrument.Token {
+			if order.Status == "OPEN" {
+				if order.TransactionType == "BUY" {
+					t.nxtPos = EXIT_LONG
+				} else if order.TransactionType == "SELL" {
+					t.nxtPos = EXIT_SHORT
+				}
+			}
+		}
+	}
 
 	if p.next != nil {
 		p.next.Execute(t)

@@ -20,7 +20,7 @@ var (
 type Instrument struct {
 	Name           string
 	Symbol         string
-	Token          string
+	Token          uint32
 	Exchange       string
 	InstrumentType string
 	Segment        string
@@ -35,7 +35,7 @@ type OHLC struct {
 	Volume float64
 }
 
-func NewInstrument(name, symbol, token, exchange, instrumentType, segment string) *Instrument {
+func NewInstrument(name, symbol, exchange, instrumentType, segment string, token uint32) *Instrument {
 	return &Instrument{
 		Name:           name,
 		Symbol:         symbol,

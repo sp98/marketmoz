@@ -25,7 +25,7 @@ import (
 )
 
 var organization string
-var token string
+var token uint32
 var cadence string
 var exchange string
 var segment string
@@ -38,7 +38,7 @@ var ohlcCmd = &cobra.Command{
 		ctx := context.Background()
 		db := influx.NewDB(ctx, organization, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 		defer db.Client.Close()
-		instrument := data.NewInstrument("", "", token, exchange, "", segment)
+		instrument := data.NewInstrument("", "", exchange, "", segment, token)
 		instrument.GetOHLC(db)
 	},
 }
@@ -48,7 +48,7 @@ func init() {
 
 	ohlcCmd.Flags().StringVarP(&organization, "organization", "o", "", "influxdb organization")
 	ohlcCmd.MarkFlagRequired("organization")
-	ohlcCmd.Flags().StringVarP(&token, "token", "t", "", "instruement token")
+	ohlcCmd.Flags().Uint32VarP(&token, "token", "t", 0, "instruement token")
 	ohlcCmd.MarkFlagRequired("token")
 	// TODO: limit the values candence can have. For example, only use 1m, 3m, 5m, 1d, 1w, etc.
 	ohlcCmd.Flags().StringVarP(&cadence, "cadence", "c", "", "cadence")

@@ -22,10 +22,11 @@ type NextPosition string
 
 const (
 	ENTER_LONG  NextPosition = "ENTER_LONG"
-	EXIT_LONG   NextPosition = "EXIT_SHORT"
+	EXIT_LONG   NextPosition = "EXIT_LONG"
 	ENTER_SHORT NextPosition = "ENTER_SHORT"
 	EXIT_SHORT  NextPosition = "EXIT_SHORT"
 )
+
 const (
 	PVT_STRATEGY = "pvt"
 )
