@@ -9,10 +9,10 @@ type EnterLong struct {
 func (el *EnterLong) Execute(t *Trade) {
 	fmt.Println("Flow: Enter Long Position")
 
-	if t.NextPosition == "EnterLong" {
+	if t.nxtPos == ENTER_LONG {
 		// update NextPosition to EnterShort if Long entry rules don't match
 		if !t.Strategy.ShouldEnterLong(t.Series.LastIndex()) {
-			t.NextPosition = "EnterShort"
+			t.nxtPos = ENTER_SHORT
 		}
 	}
 	if el.next != nil {
@@ -31,7 +31,7 @@ type ExitLong struct {
 func (el *ExitLong) Execute(t *Trade) {
 	fmt.Println("Flow: Exit Long Position")
 
-	if t.NextPosition == "ExitLong" {
+	if t.nxtPos == EXIT_LONG {
 		// Validation ExitLong rules if NextPosition is ExitLong
 		// If false, reset NextPosition
 	}
