@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 	kitemodels "github.com/zerodha/gokiteconnect/v4/models"
@@ -164,7 +165,7 @@ func (k *Kite) CreateDownsampleTasks() error {
 
 // getRTDBucket returns bucket name to store real time data.
 func getRTDBucket(token string) (string, error) {
-	td := common.GetInstrumentDetails(token)
+	td := data.GetInstrumentDetails(token)
 	if td == nil {
 		return "", fmt.Errorf("failed to get token details for token %q", token)
 	}

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/sdcoffey/big"
-	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/utils"
 	"github.com/sp98/techan"
 )
@@ -19,29 +18,29 @@ const (
 	RSI14 = 14
 )
 
-func GetSeries() (*techan.TimeSeries, int) {
+// func GetSeries() (*techan.TimeSeries, int) {
 
-	series := techan.NewTimeSeries()
+// 	series := techan.NewTimeSeries()
 
-	data := data.NewOHLCData("marketmoz", "2112121 ", "1m", "NSE", "EQ")
-	ohlc, _ := data.GetOHLC()
-	d := ohlc.GetData()
+// 	data := data.NewOHLCData("marketmoz", "2112121 ", "1m", "NSE", "EQ")
+// 	ohlc, _ := data.GetOHLC()
+// 	d := ohlc.GetData()
 
-	count := 0
-	for _, datum := range *d {
-		period := techan.NewTimePeriod(time.Unix(datum.Time, 0), time.Minute*1)
-		candle := techan.NewCandle(period)
-		candle.OpenPrice = big.NewFromString(fmt.Sprintf("%f", datum.Open))
-		candle.ClosePrice = big.NewFromString(fmt.Sprintf("%f", datum.Close))
-		candle.MaxPrice = big.NewFromString(fmt.Sprintf("%f", datum.High))
-		candle.MinPrice = big.NewFromString(fmt.Sprintf("%f", datum.Low))
-		series.AddCandle(candle)
-		count = count + 1
-	}
+// 	count := 0
+// 	for _, datum := range *d {
+// 		period := techan.NewTimePeriod(time.Unix(datum.Time, 0), time.Minute*1)
+// 		candle := techan.NewCandle(period)
+// 		candle.OpenPrice = big.NewFromString(fmt.Sprintf("%f", datum.Open))
+// 		candle.ClosePrice = big.NewFromString(fmt.Sprintf("%f", datum.Close))
+// 		candle.MaxPrice = big.NewFromString(fmt.Sprintf("%f", datum.High))
+// 		candle.MinPrice = big.NewFromString(fmt.Sprintf("%f", datum.Low))
+// 		series.AddCandle(candle)
+// 		count = count + 1
+// 	}
 
-	return series, count
+// 	return series, count
 
-}
+// }
 func BasicEma(window int, series *techan.TimeSeries) techan.Indicator {
 	closePrices := techan.NewClosePriceIndicator(series)
 	movingAverage := techan.NewEMAIndicator(closePrices, window)

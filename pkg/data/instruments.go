@@ -1,13 +1,4 @@
-package common
-
-type Instrument struct {
-	Name           string
-	Symbol         string
-	Token          string
-	Exchange       string
-	InstrumentType string
-	Segment        string
-}
+package data
 
 var InstrumentMap = map[string]Instrument{
 	"61348": {

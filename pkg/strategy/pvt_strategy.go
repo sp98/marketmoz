@@ -1,7 +1,7 @@
 package strategy
 
 import (
-	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/rule"
 	"github.com/sp98/techan"
 )
@@ -40,11 +40,11 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 }
 
 //GetPVTInstruments returns a list of instruments that should be traded with PVT strategy
-func GetPVTInstruments() *[]common.Instrument {
-	pvtInstruments := []common.Instrument{}
+func GetPVTInstruments() *[]data.Instrument {
+	pvtInstruments := []data.Instrument{}
 
 	for _, token := range PVTInstruments {
-		instrument := common.GetInstrumentDetails(token)
+		instrument := data.GetInstrumentDetails(token)
 		if instrument != nil {
 			pvtInstruments = append(pvtInstruments, *instrument)
 		}

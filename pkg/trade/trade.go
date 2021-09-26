@@ -9,6 +9,7 @@ import (
 
 	"github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
 	"github.com/sp98/marketmoz/pkg/strategy"
@@ -48,7 +49,7 @@ type Trade struct {
 	DB *influx.DB
 
 	// Instrument to be traded
-	Instrument common.Instrument
+	Instrument data.Instrument
 
 	// OrderParams represents the parameters for the new long or short order
 	OrderParams kiteconnect.OrderParams
@@ -78,7 +79,7 @@ func (t *Trade) SetStrategy(strategy strategy.Strategy) {
 	t.Strategy = strategy
 }
 
-func (t *Trade) SetInstrument(instrument common.Instrument) {
+func (t *Trade) SetInstrument(instrument data.Instrument) {
 	t.Instrument = instrument
 }
 

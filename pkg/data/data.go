@@ -1,7 +1,6 @@
 package data
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -18,13 +17,13 @@ var (
 	ohlcQueryTestAssert = "queries/test.flux"
 )
 
-type OHLCData struct {
-	org      string
-	token    string
-	cadence  string
-	exchange string
-	segment  string
-	data     *[]OHLC
+type Instrument struct {
+	Name           string
+	Symbol         string
+	Token          string
+	Exchange       string
+	InstrumentType string
+	Segment        string
 }
 
 type OHLC struct {
@@ -36,60 +35,32 @@ type OHLC struct {
 	Volume float64
 }
 
-func NewOHLCData(org, token, cadence, exchange, segment string) *OHLCData {
-	return &OHLCData{
-		org:      org,
-		token:    token,
-		cadence:  cadence,
-		segment:  segment,
-		exchange: exchange,
+func NewInstrument(name, symbol, token, exchange, instrumentType, segment string) *Instrument {
+	return &Instrument{
+		Name:           name,
+		Symbol:         symbol,
+		Token:          token,
+		Exchange:       exchange,
+		InstrumentType: instrumentType,
+		Segment:        segment,
 	}
 }
 
-func (o OHLCData) SetOrg(org string) OHLCData {
-	o.org = org
-	return o
+func (i Instrument) GetBucket(timeFrame string) string {
+	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, i.Exchange, i.Segment, timeFrame)
 }
 
-func (o OHLCData) SetToken(token string) OHLCData {
-	o.token = token
-	return o
+func (i Instrument) GetMeasurement() string {
+	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, i.Token)
 }
 
-func (o OHLCData) SetCadence(cadence string) OHLCData {
-	o.cadence = cadence
-	return o
-}
-
-func (o OHLCData) SetExchange(exchange string) OHLCData {
-	o.exchange = exchange
-	return o
-}
-
-func (o OHLCData) SetSegment(segment string) OHLCData {
-	o.segment = segment
-	return o
-}
-
-func (o OHLCData) GetData() *[]OHLC {
-	return o.data
-}
-
-func (o OHLCData) GetBucket() string {
-	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, o.exchange, o.segment, o.cadence)
-}
-
-func (o OHLCData) GetMeasurement() string {
-	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, o.token)
-}
-
-func (o OHLCData) GetQuery() (string, error) {
+func (i Instrument) GetQuery(timeFrame string) (string, error) {
 	queryBytes, err := assets.ReadFileAndReplace(
 		ohlcQueryAsset,
 		[]string{
-			"${INPUT_BUCKET}", o.GetBucket(),
-			"${INPUT_MEASUREMENT}", o.GetMeasurement(),
-			"${INPUT_EVERY}", o.cadence,
+			"${INPUT_BUCKET}", i.GetBucket(timeFrame),
+			"${INPUT_MEASUREMENT}", i.GetMeasurement(),
+			"${INPUT_EVERY}", timeFrame,
 		},
 	)
 
@@ -108,11 +79,7 @@ func getTestQuery() (string, error) {
 	return string(queryBytes), err
 }
 
-func (o OHLCData) GetOHLC() (*OHLCData, error) {
-	ctx := context.Background()
-	db := influx.NewDB(ctx, o.org, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
-	defer db.Client.Close()
-
+func (i Instrument) GetOHLC(db *influx.DB) (*[]OHLC, error) {
 	// TODO: remove getTestQuery method when calling the kite API
 	query, err := getTestQuery()
 	if err != nil {
@@ -132,8 +99,7 @@ func (o OHLCData) GetOHLC() (*OHLCData, error) {
 	}
 
 	Logger.Info("OHCL result ", zap.Any("ohlc", ohlc))
-	o.data = ohlc
-	return &o, nil
+	return ohlc, nil
 }
 
 func parseOHLC(in *api.QueryTableResult) (*[]OHLC, error) {

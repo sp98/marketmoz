@@ -16,7 +16,11 @@ limitations under the License.
 package get
 
 import (
+	"context"
+
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
+	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +35,11 @@ var ohlcCmd = &cobra.Command{
 	Use:   "ohlc",
 	Short: "Get OHLC data",
 	Run: func(cmd *cobra.Command, args []string) {
-		data := data.NewOHLCData(organization, token, cadence,
-			exchange, segment)
-		data.GetOHLC()
+		ctx := context.Background()
+		db := influx.NewDB(ctx, organization, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
+		defer db.Client.Close()
+		instrument := data.NewInstrument("", "", token, exchange, "", segment)
+		instrument.GetOHLC(db)
 	},
 }
 
