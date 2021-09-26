@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/ashwanthkumar/slack-go-webhook"
-	"github.com/go-co-op/gocron"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
@@ -95,9 +95,17 @@ func (t *Trade) Notify(payload slack.Payload) []error {
 	return nil
 }
 
-func Start(name string) error {
+func (t *Trade) start(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+	start, _ := utils.StartTimeAndLoc()
+	flow := NewTradeFlow()
+	for range utils.Every(ctx, start, 1*time.Minute) {
+		flow.Execute(t)
+		fmt.Printf("Trade - %+v\n", t)
+	}
+}
 
-	//strategy.ExampleStrategy()
+func Start(name string) error {
 	// Get kite connect client
 	apiKey := os.Getenv(common.KITE_API_KEY)
 	apiSecret := os.Getenv(common.KITE_API_SECRET)
@@ -113,6 +121,35 @@ func Start(name string) error {
 		common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 
 	// Setup trade flow
+
+	ctx, _ := context.WithDeadline(context.Background(), utils.EndTime())
+	switch name {
+	case PVT_STRATEGY:
+		var wg sync.WaitGroup
+		pvtInstruments := strategy.GetPVTInstruments()
+		for _, instrument := range *pvtInstruments {
+			wg.Add(1)
+			t := NewTrade("PVT")
+			t.SetDB(db)
+			t.SetBrokerClient(client)
+			t.SetInstrument(instrument)
+			go t.start(ctx, &wg)
+		}
+		wg.Wait()
+
+	default:
+		return fmt.Errorf("invalid strategy %q", name)
+	}
+
+	fmt.Println("Trading with PVT strategy ended at - ", utils.CurrentTime())
+
+	// TODO: Clean up after trade ended.
+	// 1. Exit any pending trade.
+	// 2. Send notification to end any pending trade
+	return nil
+}
+
+func NewTradeFlow() Flow {
 	order := &Order{}
 
 	exitShort := &ExitShort{}
@@ -134,38 +171,5 @@ func Start(name string) error {
 	series := &Series{}
 	series.SetNext(rules)
 
-	switch name {
-	case PVT_STRATEGY:
-		var wg sync.WaitGroup
-		pvtInstruments := strategy.GetPVTInstruments()
-		for _, instrument := range *pvtInstruments {
-			// copy flow
-			//series := series
-			wg.Add(1)
-			t := NewTrade("PVT")
-			t.SetDB(db)
-			t.SetBrokerClient(client)
-			t.SetInstrument(instrument)
-			go start(series, t)
-		}
-
-		wg.Wait()
-
-	default:
-		return fmt.Errorf("invalid strategy %q", name)
-	}
-
-	// Stop Trade
-	return nil
-}
-
-func start(flow Flow, trade *Trade) {
-	startTime, startLocation := utils.StartTimeAndLoc()
-	cron := gocron.NewScheduler(startLocation)
-	cron.Every(1).Minute().StartAt(startTime).Do(func() {
-		flow.Execute(trade)
-		fmt.Printf("%+v \n", trade)
-
-	})
-	cron.StartBlocking()
+	return series
 }
