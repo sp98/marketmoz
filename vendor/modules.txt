@@ -1,11 +1,16 @@
 # github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 ## explicit
 github.com/araddon/dateparse
+# github.com/ashwanthkumar/slack-go-webhook v0.0.0-20200209025033-430dd4e66960
+## explicit
+github.com/ashwanthkumar/slack-go-webhook
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/deepmap/oapi-codegen v1.6.0
 github.com/deepmap/oapi-codegen/pkg/runtime
 github.com/deepmap/oapi-codegen/pkg/types
+# github.com/elazarl/goproxy v0.0.0-20210801061803-8e322dfb79c4
+## explicit
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-co-op/gocron v1.9.0
@@ -50,6 +55,9 @@ github.com/magiconair/properties
 # github.com/mitchellh/mapstructure v1.4.1
 ## explicit
 github.com/mitchellh/mapstructure
+# github.com/parnurzeal/gorequest v0.2.16
+## explicit
+github.com/parnurzeal/gorequest
 # github.com/pelletier/go-toml v1.9.3
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.9.1
@@ -119,3 +127,6 @@ gopkg.in/ini.v1
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
+# moul.io/http2curl v1.0.0
+## explicit
+moul.io/http2curl

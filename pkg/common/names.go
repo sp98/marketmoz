@@ -9,6 +9,9 @@ const (
 	KITE_API_KEY       = "KITE_API_KEY"
 	KITE_REQUEST_TOKEN = "KITE_REQUEST_TOKEN"
 	KITE_API_SECRET    = "KITE_API_SECRET"
+
+	SLACK_WEBHOOK_URL = "SLACK_WEBHOOK_URL"
+	SLACK_CHANNEL     = "SLACK_MARKETMOZ_CHANNEL"
 )
 
 var (
@@ -31,4 +34,15 @@ var (
 	// OHLC_DOWNSAMPLE_MEASUREMENT is the measurement to store downsampled OHLC data for a token.
 	// Naming convention is OHLC-<Instruement-Token>. For example: OHLC-12345
 	OHLC_DOWNSAMPLE_MEASUREMENT = "OHLC-%s"
+
+	// Slack message format
+	SLACK_NOTIFICATION_MESSAGE = `TRADE TYPE: %s
+	NAME: %s
+	SYMBOL: %s
+	EXCHANGE: %s
+	SEGMENT: %s
+	TIME: %s
+	______________________________________
+
+	`
 )

@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/go-co-op/gocron"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/db/influx"
@@ -16,6 +17,14 @@ import (
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 )
 
+type NextPosition string
+
+const (
+	ENTER_LONG  NextPosition = "ENTER_LONG"
+	EXIT_LONG   NextPosition = "EXIT_SHORT"
+	ENTER_SHORT NextPosition = "ENTER_SHORT"
+	EXIT_SHORT  NextPosition = "EXIT_SHORT"
+)
 const (
 	PVT_STRATEGY = "pvt"
 )
@@ -27,7 +36,7 @@ type Trade struct {
 	Series *techan.TimeSeries
 
 	// NextPosition defines the next set of actions to be taken
-	NextPosition string
+	nxtPos NextPosition
 
 	// Strategy defines the set of rules to be used in this strategy
 	Strategy strategy.Strategy
@@ -40,6 +49,9 @@ type Trade struct {
 
 	// Instrument to be traded
 	Instrument common.Instrument
+
+	// OrderParams represents the parameters for the new long or short order
+	OrderParams kiteconnect.OrderParams
 }
 
 func NewTrade(name string) *Trade {
@@ -54,8 +66,12 @@ func (t *Trade) SetDB(db *influx.DB) {
 	t.DB = db
 }
 
-func (t *Trade) SetNextPosition(position string) {
-	t.NextPosition = position
+func (t *Trade) SetNextPosition(position NextPosition) {
+	t.nxtPos = position
+}
+
+func (t *Trade) ResetNextPosition() {
+	t.nxtPos = ""
 }
 
 func (t *Trade) SetStrategy(strategy strategy.Strategy) {
@@ -64,6 +80,19 @@ func (t *Trade) SetStrategy(strategy strategy.Strategy) {
 
 func (t *Trade) SetInstrument(instrument common.Instrument) {
 	t.Instrument = instrument
+}
+
+func (t *Trade) SetOrderParams(orderParams kiteconnect.OrderParams) {
+	t.OrderParams = orderParams
+}
+
+func (t *Trade) Notify(payload slack.Payload) []error {
+	url := os.Getenv(common.SLACK_WEBHOOK_URL)
+	err := slack.Send(url, "", payload)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func Start(name string) error {
