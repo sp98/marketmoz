@@ -9,7 +9,8 @@ import (
 var PVTInstruments = []string{"61348", "59393", "59163"}
 
 func PVTStrategyRules(series *techan.TimeSeries) Strategy {
-	// Create RuleStrategy using all entry and exit rules for PVT strategy
+
+	// Set indicators
 	closePriceIndicator := techan.NewClosePriceIndicator(series)
 	volumeIndicator := techan.NewVolumeIndicator(series)
 
@@ -21,12 +22,20 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 
 	macdHistogramIndicator := techan.NewMACDHistogramIndicator(techan.NewMACDIndicator(closePriceIndicator, 12, 26), 9)
 	macdHistogramConstantIndicator := techan.NewConstantIndicator(0)
-	longEntryRule := rule.NewAndRule(
+
+	// Set rules
+
+	// Set Long Entry rule
+	longEntryRule := &rule.AndOrRule{}
+	longEntryRule.SetAndRule(
 		rule.NewCrossUpWithLimitIndicatorRule(pvtEMAIndicator, pvtIndicator, 1),
 		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 5),
 		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator, 5),
 	)
 
+	longEntryRule.SetOrRule()
+
+	// Set Short Entry rule
 	shortEntryRule := rule.NewAndRule(
 		rule.NewCrossUpWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
 		rule.NewCrossUpWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 5),

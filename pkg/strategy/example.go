@@ -135,4 +135,9 @@ func ExampleStrategy() {
 
 	pivotLevelS3 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.SUPPORT_3)
 	fmt.Println("pivot level S3", pivotLevelS3.Calculate(len(records)-1))
+
+	s1 := PVTStrategyRules(series)
+	fmt.Printf("Strategy - %+v\n", s1)
+	fmt.Println("Should Enter Long: ", s1.ShouldEnterLong(len(records)-1))
+	fmt.Println("Should Enter Short: ", s1.ShouldEnterLong(len(records)-1))
 }
