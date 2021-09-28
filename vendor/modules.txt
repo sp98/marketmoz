@@ -65,7 +65,7 @@ github.com/pmezard/go-difflib/difflib
 # github.com/sdcoffey/big v0.7.0
 ## explicit
 github.com/sdcoffey/big
-# github.com/sp98/techan v0.12.2-0.20210925133106-73eb2dd629cd
+# github.com/sp98/techan v0.12.2-0.20210928142433-a5d6ed45f3e6
 ## explicit
 github.com/sp98/techan
 # github.com/spf13/afero v1.6.0
