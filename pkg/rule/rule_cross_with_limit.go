@@ -1,6 +1,8 @@
 package rule
 
-import "github.com/sp98/techan"
+import (
+	"github.com/sp98/techan"
+)
 
 // NewCrossUpWithLimitIndicatorRule returns a new rule that is satisfied when the lower indicator has crossed above the upper
 // indicator within the provide limit. Limit should be greater than 0.

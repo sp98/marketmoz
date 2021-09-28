@@ -55,10 +55,11 @@ func (aor *AndOrRule) SetOrRule(or ...Rule) {
 
 func (aor *AndOrRule) IsSatisfied(index int) bool {
 	// TODO: evaluate in a goroutine
-	andRulesSatisfied := false
+	andRulesSatisfied := true
 	for _, r := range aor.andRules {
-		if r.IsSatisfied(index) {
-			andRulesSatisfied = true
+		if !r.IsSatisfied(index) {
+			// No need to evaluate futher if any of the AndRules is false
+			return false
 		}
 	}
 
@@ -66,6 +67,8 @@ func (aor *AndOrRule) IsSatisfied(index int) bool {
 	for _, r := range aor.orRules {
 		if r.IsSatisfied(index) {
 			orRulesSatisfied = true
+			// No need to evaluate further rules since one of the orRules is satisfied
+			break
 		}
 	}
 

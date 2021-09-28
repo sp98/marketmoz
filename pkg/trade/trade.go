@@ -108,8 +108,10 @@ func (t *Trade) start(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func Start(name string) error {
-	// Get kite connect client
 	// strategy.ExampleStrategy()
+	// return nil
+
+	// Get kite connect client
 	apiKey := os.Getenv(common.KITE_API_KEY)
 	apiSecret := os.Getenv(common.KITE_API_SECRET)
 	requestToken := os.Getenv(common.KITE_REQUEST_TOKEN)

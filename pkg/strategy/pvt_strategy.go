@@ -23,23 +23,27 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	macdHistogramIndicator := techan.NewMACDHistogramIndicator(techan.NewMACDIndicator(closePriceIndicator, 12, 26), 9)
 	macdHistogramConstantIndicator := techan.NewConstantIndicator(0)
 
+	isBullish := techan.NewBullishIndicator(series)
+
 	// Set rules
 
 	// Set Long Entry rule
 	longEntryRule := &rule.AndOrRule{}
 	longEntryRule.SetAndRule(
 		rule.NewCrossUpWithLimitIndicatorRule(pvtEMAIndicator, pvtIndicator, 1),
-		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 5),
+		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 1),
 		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator, 5),
 	)
 
-	longEntryRule.SetOrRule()
+	longEntryRule.SetOrRule(
+		rule.NewEqualRule(isBullish, techan.NewConstantIndicator(1)),
+	)
 
 	// Set Short Entry rule
 	shortEntryRule := rule.NewAndRule(
-		rule.NewCrossUpWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
-		rule.NewCrossUpWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 5),
-		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator, 5),
+		rule.NewCrossDownWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
+		rule.NewCrossDownWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 5),
+		rule.NewCrossDownWithLimitIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator, 5),
 	)
 
 	return &RuleStrategy{
