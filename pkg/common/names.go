@@ -37,6 +37,7 @@ var (
 
 	// Slack message format
 	SLACK_NOTIFICATION_MESSAGE = `TRADE TYPE: %s
+	STATUS: %s
 	NAME: %s
 	SYMBOL: %s
 	EXCHANGE: %s

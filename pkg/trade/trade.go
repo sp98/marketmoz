@@ -76,6 +76,10 @@ func (t *Trade) ResetNextPosition() {
 	t.nxtPos = ""
 }
 
+func (t *Trade) ResetOrderParams() {
+	t.OrderParams = nil
+}
+
 func (t *Trade) SetStrategy(strategy strategy.Strategy) {
 	t.Strategy = strategy
 }
