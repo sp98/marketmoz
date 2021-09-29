@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"github.com/sdcoffey/big"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/rule"
 	"github.com/sp98/techan"
@@ -56,6 +57,31 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 		LongEntryRule:  longEntryRule,
 		ShortEntryRule: shortEntryRule,
 	}
+}
+
+// GetPVTStrategyLongSL returns the lowest between current candle low and previous candle low
+func GetPVTStrategyLongSL(series *techan.TimeSeries) big.Decimal {
+	index := series.LastIndex()
+	currentLow := techan.NewLowPriceIndicator(series).Calculate(index)
+	previousLow := techan.NewLowPriceIndicator(series).Calculate(index - 1)
+
+	if currentLow.LT(previousLow) {
+		return currentLow
+	}
+	return previousLow
+
+}
+
+// GetPVTStrategyShortSL returns the highest between current candle high and previous candle high
+func GetPVTStrategyShortSL(series *techan.TimeSeries) big.Decimal {
+	index := series.LastIndex()
+	currentHigh := techan.NewHighPriceIndicator(series).Calculate(index)
+	previousHigh := techan.NewHighPriceIndicator(series).Calculate(index - 1)
+
+	if currentHigh.GT(previousHigh) {
+		return currentHigh
+	}
+	return previousHigh
 }
 
 //GetPVTInstruments returns a list of instruments that should be traded with PVT strategy

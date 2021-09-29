@@ -1,6 +1,11 @@
 package trade
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sp98/marketmoz/pkg/strategy"
+	kiteconnect "github.com/zerodha/gokiteconnect/v4"
+)
 
 type EnterShort struct {
 	next Flow
@@ -10,8 +15,28 @@ func (es *EnterShort) Execute(t *Trade) {
 	fmt.Println("Flow: Enter Short Position")
 
 	if t.nxtPos == ENTER_SHORT {
-		// Reset NextPosition of Short entry rules don't match
-		if !t.Strategy.ShouldEnterShort(t.Series.LastIndex()) {
+		if t.Strategy.ShouldEnterShort(t.Series.LastIndex()) {
+			// Create order for long position
+			triggerPrice := strategy.GetPVTStrategyShortSL(t.Series)
+			orderParams := &kiteconnect.OrderParams{
+				Exchange:          t.Instrument.Exchange,
+				Tradingsymbol:     t.Instrument.Symbol,
+				Validity:          "DAY",
+				Product:           "MIS",
+				OrderType:         "SL-M",
+				TransactionType:   "SELL",
+				Quantity:          0,
+				DisclosedQuantity: 0,
+				Price:             0,
+				TriggerPrice:      triggerPrice.Float(), // Higher of Previous candle and current Candle High
+				Squareoff:         0,
+				Stoploss:          0,
+				TrailingStoploss:  0,
+				Tag:               t.Name,
+			}
+			t.SetOrderParams(orderParams)
+		} else {
+			// Reset NextPosition of Short entry rules don't match
 			t.nxtPos = ""
 		}
 	}
