@@ -12,6 +12,11 @@ const (
 
 	SLACK_WEBHOOK_URL = "SLACK_WEBHOOK_URL"
 	SLACK_CHANNEL     = "SLACK_MARKETMOZ_CHANNEL"
+
+	// Query files
+	OHLC_QUERY_ASSET      = "queries/ohlc.flux"
+	OHLC_QUERY_TEST_ASSET = "queries/test.flux"
+	LASTPRICE_QUERY_ASSET = "queries/lastPrice.flux"
 )
 
 var (
