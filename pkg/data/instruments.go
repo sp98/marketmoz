@@ -1,19 +1,10 @@
-package common
-
-type Instrument struct {
-	Name           string
-	Symbol         string
-	Token          string
-	Exchange       string
-	InstrumentType string
-	Segment        string
-}
+package data
 
 var InstrumentMap = map[string]Instrument{
 	"61348": {
 		Name:           "RELIANCE INDUSTRIES",
 		Symbol:         "RELIANCE",
-		Token:          "61348",
+		Token:          uint32(61348),
 		Exchange:       "NSE",
 		InstrumentType: "EQ",
 		Segment:        "NSE",
@@ -21,7 +12,7 @@ var InstrumentMap = map[string]Instrument{
 	"59393": {
 		Name:           "HAVELLS INDIA",
 		Symbol:         "HAVELLS",
-		Token:          "59393",
+		Token:          uint32(59393),
 		Exchange:       "NSE",
 		InstrumentType: "EQ",
 		Segment:        "NSE",
@@ -29,7 +20,7 @@ var InstrumentMap = map[string]Instrument{
 	"59163": {
 		Name:           "INFOSYS",
 		Symbol:         "INFY",
-		Token:          "59163",
+		Token:          uint32(59163),
 		Exchange:       "NSE",
 		InstrumentType: "EQ",
 		Segment:        "NSE",

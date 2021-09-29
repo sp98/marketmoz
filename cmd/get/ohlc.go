@@ -16,12 +16,16 @@ limitations under the License.
 package get
 
 import (
+	"context"
+
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
+	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/spf13/cobra"
 )
 
 var organization string
-var token string
+var token uint32
 var cadence string
 var exchange string
 var segment string
@@ -31,9 +35,11 @@ var ohlcCmd = &cobra.Command{
 	Use:   "ohlc",
 	Short: "Get OHLC data",
 	Run: func(cmd *cobra.Command, args []string) {
-		data := data.NewOHLCData(organization, token, cadence,
-			exchange, segment)
-		data.GetOHLC()
+		ctx := context.Background()
+		db := influx.NewDB(ctx, organization, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
+		defer db.Client.Close()
+		instrument := data.NewInstrument("", "", exchange, "", segment, token)
+		instrument.GetOHLC(db)
 	},
 }
 
@@ -42,7 +48,7 @@ func init() {
 
 	ohlcCmd.Flags().StringVarP(&organization, "organization", "o", "", "influxdb organization")
 	ohlcCmd.MarkFlagRequired("organization")
-	ohlcCmd.Flags().StringVarP(&token, "token", "t", "", "instruement token")
+	ohlcCmd.Flags().Uint32VarP(&token, "token", "t", 0, "instruement token")
 	ohlcCmd.MarkFlagRequired("token")
 	// TODO: limit the values candence can have. For example, only use 1m, 3m, 5m, 1d, 1w, etc.
 	ohlcCmd.Flags().StringVarP(&cadence, "cadence", "c", "", "cadence")

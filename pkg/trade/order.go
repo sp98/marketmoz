@@ -18,6 +18,13 @@ func (o *Order) Execute(t *Trade) {
 
 	// Perform actions if NextPosition is not empty
 	if t.nxtPos != "" {
+		switch t.nxtPos {
+		case ENTER_LONG:
+		case ENTER_SHORT:
+		case EXIT_LONG:
+		case EXIT_SHORT:
+		}
+
 		message := notificationMessage(t)
 		err := t.Notify(message)
 		if err != nil {

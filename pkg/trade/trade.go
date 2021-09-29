@@ -9,6 +9,7 @@ import (
 
 	"github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/sp98/marketmoz/pkg/fetcher/kite"
 	"github.com/sp98/marketmoz/pkg/strategy"
@@ -21,10 +22,11 @@ type NextPosition string
 
 const (
 	ENTER_LONG  NextPosition = "ENTER_LONG"
-	EXIT_LONG   NextPosition = "EXIT_SHORT"
+	EXIT_LONG   NextPosition = "EXIT_LONG"
 	ENTER_SHORT NextPosition = "ENTER_SHORT"
 	EXIT_SHORT  NextPosition = "EXIT_SHORT"
 )
+
 const (
 	PVT_STRATEGY = "pvt"
 )
@@ -48,7 +50,7 @@ type Trade struct {
 	DB *influx.DB
 
 	// Instrument to be traded
-	Instrument common.Instrument
+	Instrument data.Instrument
 
 	// OrderParams represents the parameters for the new long or short order
 	OrderParams kiteconnect.OrderParams
@@ -78,7 +80,7 @@ func (t *Trade) SetStrategy(strategy strategy.Strategy) {
 	t.Strategy = strategy
 }
 
-func (t *Trade) SetInstrument(instrument common.Instrument) {
+func (t *Trade) SetInstrument(instrument data.Instrument) {
 	t.Instrument = instrument
 }
 
@@ -106,6 +108,9 @@ func (t *Trade) start(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func Start(name string) error {
+	// strategy.ExampleStrategy()
+	// return nil
+
 	// Get kite connect client
 	apiKey := os.Getenv(common.KITE_API_KEY)
 	apiSecret := os.Getenv(common.KITE_API_SECRET)

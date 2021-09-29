@@ -1,7 +1,7 @@
 package strategy
 
 import (
-	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/rule"
 	"github.com/sp98/techan"
 )
@@ -9,7 +9,8 @@ import (
 var PVTInstruments = []string{"61348", "59393", "59163"}
 
 func PVTStrategyRules(series *techan.TimeSeries) Strategy {
-	// Create RuleStrategy using all entry and exit rules for PVT strategy
+
+	// Set indicators
 	closePriceIndicator := techan.NewClosePriceIndicator(series)
 	volumeIndicator := techan.NewVolumeIndicator(series)
 
@@ -21,16 +22,34 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 
 	macdHistogramIndicator := techan.NewMACDHistogramIndicator(techan.NewMACDIndicator(closePriceIndicator, 12, 26), 9)
 	macdHistogramConstantIndicator := techan.NewConstantIndicator(0)
-	longEntryRule := rule.NewAndRule(
-		rule.NewCrossUpIndicatorRule(pvtEMAIndicator, pvtIndicator),
-		rule.NewCrossUpIndicatorRule(rsiConstantIndicator, rsiIndicator),
-		rule.NewCrossUpIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator),
+
+	isBullish := techan.NewBullishIndicator(series)
+	isBearish := techan.NewBearishIndicator(series)
+
+	// Set rules
+
+	// Set Long Entry rule
+	longEntryRule := &rule.AndOrRule{}
+	longEntryRule.SetAndRule(
+		rule.NewCrossUpWithLimitIndicatorRule(pvtEMAIndicator, pvtIndicator, 1),
+		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 2),
+		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator, 5),
 	)
 
-	shortEntryRule := rule.NewAndRule(
-		rule.NewCrossDownIndicatorRule(pvtIndicator, pvtEMAIndicator),
-		rule.NewCrossDownIndicatorRule(rsiIndicator, rsiConstantIndicator),
-		rule.NewCrossDownIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator),
+	longEntryRule.SetOrRule(
+		rule.NewEqualRule(isBullish, techan.NewConstantIndicator(1)),
+	)
+
+	// Set Short Entry rule
+	shortEntryRule := &rule.AndOrRule{}
+	shortEntryRule.SetAndRule(
+		rule.NewCrossDownWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
+		rule.NewCrossDownWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 2),
+		rule.NewCrossDownWithLimitIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator, 5),
+	)
+
+	shortEntryRule.SetOrRule(
+		rule.NewEqualRule(isBearish, techan.NewConstantIndicator(1)),
 	)
 
 	return &RuleStrategy{
@@ -40,11 +59,11 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 }
 
 //GetPVTInstruments returns a list of instruments that should be traded with PVT strategy
-func GetPVTInstruments() *[]common.Instrument {
-	pvtInstruments := []common.Instrument{}
+func GetPVTInstruments() *[]data.Instrument {
+	pvtInstruments := []data.Instrument{}
 
 	for _, token := range PVTInstruments {
-		instrument := common.GetInstrumentDetails(token)
+		instrument := data.GetInstrumentDetails(token)
 		if instrument != nil {
 			pvtInstruments = append(pvtInstruments, *instrument)
 		}

@@ -6,6 +6,7 @@ import (
 	domain "github.com/influxdata/influxdb-client-go/v2/domain"
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/common"
+	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -17,7 +18,7 @@ var (
 
 func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 	ohlcTasks := []domain.Task{}
-	tokens := common.GetInstrumentMap()
+	tokens := data.GetInstrumentMap()
 
 	for tokenID, tokenDetail := range *tokens {
 
