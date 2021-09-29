@@ -141,7 +141,7 @@ func (k *Kite) storeTick(tick kitemodels.Tick) {
 		"Volume":    tick.VolumeTraded,
 	}
 
-	err = k.Store.WriteData(bucket, measurement, tags, fields, tick.Timestamp.Time)
+	err = k.Store.WriteTickData(bucket, measurement, tags, fields, tick.Timestamp.Time)
 	if err != nil {
 		Logger.Error("failed to write real time data", zap.Uint32("token", tick.InstrumentToken), zap.Error(err))
 	}

@@ -3,6 +3,7 @@ package trade
 import (
 	"fmt"
 
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/strategy"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
 )
@@ -16,8 +17,30 @@ func (es *EnterShort) Execute(t *Trade) {
 
 	if t.nxtPos == ENTER_SHORT {
 		if t.Strategy.ShouldEnterShort(t.Series.LastIndex()) {
-			// Create order for long position
+			// Find R2R ratio
 			triggerPrice := strategy.GetPVTStrategyShortSL(t.Series)
+			query, err := t.Instrument.GetQuery("5m", common.LASTPRICE_QUERY_ASSET)
+			if err != nil {
+				fmt.Printf("failed to get query to get last price. Error %+v\n", err)
+			}
+
+			// How to ensure that last Price data is from the last time frame
+			lastPrice, err := t.Instrument.GetLastPrice(t.DB, query)
+			if err != nil {
+				fmt.Printf("failed to get last. Error %+v\n", err)
+			}
+
+			if triggerPrice < lastPrice {
+				fmt.Printf("trigger price can't be lower than last price for %s trade\n", t.nxtPos)
+				return
+			}
+			risk := triggerPrice - lastPrice
+			reward := lastPrice - (2 * risk) // 1:2
+			fmt.Printf("Risk:Reward: %f/%f\n", risk, reward)
+
+			// TODO: Ignore if risk is too high?
+
+			// Create order for long position
 			orderParams := &kiteconnect.OrderParams{
 				Exchange:          t.Instrument.Exchange,
 				Tradingsymbol:     t.Instrument.Symbol,
@@ -28,7 +51,7 @@ func (es *EnterShort) Execute(t *Trade) {
 				Quantity:          0,
 				DisclosedQuantity: 0,
 				Price:             0,
-				TriggerPrice:      triggerPrice.Float(), // Higher of Previous candle and current Candle High
+				TriggerPrice:      triggerPrice, // Higher of Previous candle and current Candle High
 				Squareoff:         0,
 				Stoploss:          0,
 				TrailingStoploss:  0,

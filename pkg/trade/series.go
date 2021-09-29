@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/sdcoffey/big"
+	"github.com/sp98/marketmoz/assets"
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/techan"
 )
 
@@ -34,7 +36,13 @@ func (s *Series) SetNext(next Flow) {
 
 func getSeries(t *Trade) (*techan.TimeSeries, error) {
 	series := techan.NewTimeSeries()
-	ohlcList, err := t.Instrument.GetOHLC(t.DB)
+	query, err := GetTestQuery()
+	if err != nil {
+		fmt.Printf("failed to get query. Error %v\n", err)
+		return nil, err
+	}
+
+	ohlcList, err := t.Instrument.GetOHLC(t.DB, query)
 	if err != nil {
 		return nil, err
 	}
@@ -49,4 +57,12 @@ func getSeries(t *Trade) (*techan.TimeSeries, error) {
 	}
 
 	return series, nil
+}
+
+func GetTestQuery() (string, error) {
+	queryBytes, err := assets.ReadFileAndReplace(
+		common.OHLC_QUERY_TEST_ASSET,
+		[]string{},
+	)
+	return string(queryBytes), err
 }
