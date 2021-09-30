@@ -65,7 +65,7 @@ func (r pivotPointRule) IsSatisfied(index int) bool {
 	case r.lastPrice.GTE(r3):
 	}
 
-	percentLevel := big.NewFromInt(100).Mul(lower.Sub(r.lastPrice)).Div(upper.Sub(lower))
+	percentLevel := big.NewFromInt(100).Mul(r.lastPrice.Sub(lower)).Div(upper.Sub(lower))
 
 	switch r.trade {
 	case "BUY":

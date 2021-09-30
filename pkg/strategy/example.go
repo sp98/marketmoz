@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sdcoffey/big"
+	"github.com/sp98/marketmoz/pkg/rule"
 	"github.com/sp98/marketmoz/pkg/utils"
 	"github.com/sp98/techan"
 )
@@ -135,6 +136,14 @@ func ExampleStrategy() {
 
 	pivotLevelS3 := techan.NewPivotLevelIndicator(series, techan.DAY, techan.SUPPORT_3)
 	fmt.Println("pivot level S3", pivotLevelS3.Calculate(len(records)-1))
+
+	closePrice := techan.NewClosePriceIndicator(series).Calculate(len(records) - 1)
+	fmt.Println("last close price: ", closePrice)
+	buyPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "BUY").IsSatisfied(len(records) - 1)
+	sellPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "SELL").IsSatisfied(len(records) - 1)
+
+	fmt.Println("Buy based on pivot point rule: ", buyPivotPointRule)
+	fmt.Println("Sell based on pivot point rule: ", sellPivotPointRule)
 
 	s1 := PVTStrategyRules(series)
 	fmt.Printf("Strategy - %+v\n", s1)
