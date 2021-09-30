@@ -28,10 +28,10 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 
 	// Pivot Point
 	closePrice := series.LastCandle().ClosePrice
-	buyPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "BUY")
-	sellPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "SELL")
 
 	// Set rules
+	// TODO: is Trend Line slope greater than 10 enough
+	trendRule := rule.NewAbsGreaterRule(techan.NewTrendlineIndicator(closePriceIndicator, 5), techan.NewConstantIndicator(10))
 
 	// Set Long Entry rule
 	longEntryRule := &rule.AndOrRule{}
@@ -39,7 +39,8 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 		rule.NewCrossUpWithLimitIndicatorRule(pvtEMAIndicator, pvtIndicator, 1),
 		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 2),
 		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator, 5),
-		buyPivotPointRule,
+		rule.NewPivotPointRule(series, closePrice, techan.DAY, "BUY"),
+		trendRule,
 	)
 
 	longEntryRule.SetOrRule(
@@ -52,7 +53,8 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 		rule.NewCrossDownWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
 		rule.NewCrossDownWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 2),
 		rule.NewCrossDownWithLimitIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator, 5),
-		sellPivotPointRule,
+		rule.NewPivotPointRule(series, closePrice, techan.DAY, "SELL"),
+		trendRule,
 	)
 
 	shortEntryRule.SetOrRule(
