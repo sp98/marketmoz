@@ -149,4 +149,8 @@ func ExampleStrategy() {
 	fmt.Printf("Strategy - %+v\n", s1)
 	fmt.Println("Should Enter Long: ", s1.ShouldEnterLong(len(records)-1))
 	fmt.Println("Should Enter Short: ", s1.ShouldEnterShort(len(records)-1))
+
+	trend := techan.NewTrendlineIndicator(closePrices, 5)
+	fmt.Println("Trend Line: ", trend.Calculate(len(records)-1))
+
 }
