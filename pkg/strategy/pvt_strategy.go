@@ -26,6 +26,11 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	isBullish := techan.NewBullishIndicator(series)
 	isBearish := techan.NewBearishIndicator(series)
 
+	// Pivot Point
+	closePrice := series.LastCandle().ClosePrice
+	buyPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "BUY")
+	sellPivotPointRule := rule.NewPivotPointRule(series, closePrice, techan.MONTH, "SELL")
+
 	// Set rules
 
 	// Set Long Entry rule
@@ -34,6 +39,7 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 		rule.NewCrossUpWithLimitIndicatorRule(pvtEMAIndicator, pvtIndicator, 1),
 		rule.NewCrossUpWithLimitIndicatorRule(rsiConstantIndicator, rsiIndicator, 2),
 		rule.NewCrossUpWithLimitIndicatorRule(macdHistogramConstantIndicator, macdHistogramIndicator, 5),
+		buyPivotPointRule,
 	)
 
 	longEntryRule.SetOrRule(
@@ -46,6 +52,7 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 		rule.NewCrossDownWithLimitIndicatorRule(pvtIndicator, pvtEMAIndicator, 1),
 		rule.NewCrossDownWithLimitIndicatorRule(rsiIndicator, rsiConstantIndicator, 2),
 		rule.NewCrossDownWithLimitIndicatorRule(macdHistogramIndicator, macdHistogramConstantIndicator, 5),
+		sellPivotPointRule,
 	)
 
 	shortEntryRule.SetOrRule(
