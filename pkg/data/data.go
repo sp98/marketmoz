@@ -12,9 +12,7 @@ import (
 )
 
 var (
-	Logger              *zap.Logger
-	ohlcQueryAsset      = "queries/ohlc.flux"
-	ohlcQueryTestAssert = "queries/test.flux"
+	Logger *zap.Logger
 )
 
 type Instrument struct {
@@ -33,6 +31,10 @@ type OHLC struct {
 	Close  float64
 	Time   int64
 	Volume float64
+}
+
+type LastPrice struct {
+	Price float64
 }
 
 func NewInstrument(name, symbol, exchange, instrumentType, segment string, token uint32) *Instrument {
@@ -54,9 +56,9 @@ func (i Instrument) GetMeasurement() string {
 	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, i.Token)
 }
 
-func (i Instrument) GetQuery(timeFrame string) (string, error) {
+func (i Instrument) GetQuery(timeFrame, queryFile string) (string, error) {
 	queryBytes, err := assets.ReadFileAndReplace(
-		ohlcQueryAsset,
+		queryFile,
 		[]string{
 			"${INPUT_BUCKET}", i.GetBucket(timeFrame),
 			"${INPUT_MEASUREMENT}", i.GetMeasurement(),
@@ -71,21 +73,27 @@ func (i Instrument) GetQuery(timeFrame string) (string, error) {
 	return string(queryBytes), nil
 }
 
-func getTestQuery() (string, error) {
-	queryBytes, err := assets.ReadFileAndReplace(
-		ohlcQueryTestAssert,
-		[]string{},
-	)
-	return string(queryBytes), err
-}
-
-func (i Instrument) GetOHLC(db *influx.DB) (*[]OHLC, error) {
-	// TODO: remove getTestQuery method when calling the kite API
-	query, err := getTestQuery()
+func (i Instrument) GetLastPrice(db *influx.DB, query string) (float64, error) {
+	result, err := db.GetData(query)
 	if err != nil {
-		return nil, err
+		Logger.Error("failed to get ohlc data from the influx db.", zap.Error(err))
+		return -1, fmt.Errorf("failed to get ohlc data from the influx db. Error %v", err)
 	}
 
+	lastPrice, err := parseLastPrice(result)
+	if err != nil {
+		return -1, fmt.Errorf("failed to parse the results. Error %v", err)
+
+	}
+
+	if len(*lastPrice) == 0 {
+		return -1, fmt.Errorf("no last price data available. Error %v", err)
+	}
+
+	return (*lastPrice)[0].Price, nil
+}
+
+func (i Instrument) GetOHLC(db *influx.DB, query string) (*[]OHLC, error) {
 	result, err := db.GetData(query)
 	if err != nil {
 		Logger.Error("failed to get ohlc data from the influx db.", zap.Error(err))
@@ -100,6 +108,22 @@ func (i Instrument) GetOHLC(db *influx.DB) (*[]OHLC, error) {
 
 	Logger.Info("OHCL result ", zap.Any("ohlc", ohlc))
 	return ohlc, nil
+}
+
+func parseLastPrice(in *api.QueryTableResult) (*[]LastPrice, error) {
+	out, err := parse(in)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse the results. Error %v", err)
+
+	}
+	lp := &[]LastPrice{}
+	err = ms.Decode(out, lp)
+	if err != nil {
+		Logger.Error("failed to decode parsed db data into ohlc struct", zap.Error(err))
+		return nil, err
+	}
+
+	return lp, nil
 }
 
 func parseOHLC(in *api.QueryTableResult) (*[]OHLC, error) {

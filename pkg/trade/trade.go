@@ -53,7 +53,7 @@ type Trade struct {
 	Instrument data.Instrument
 
 	// OrderParams represents the parameters for the new long or short order
-	OrderParams kiteconnect.OrderParams
+	OrderParams *kiteconnect.OrderParams
 }
 
 func NewTrade(name string) *Trade {
@@ -76,6 +76,10 @@ func (t *Trade) ResetNextPosition() {
 	t.nxtPos = ""
 }
 
+func (t *Trade) ResetOrderParams() {
+	t.OrderParams = nil
+}
+
 func (t *Trade) SetStrategy(strategy strategy.Strategy) {
 	t.Strategy = strategy
 }
@@ -84,7 +88,7 @@ func (t *Trade) SetInstrument(instrument data.Instrument) {
 	t.Instrument = instrument
 }
 
-func (t *Trade) SetOrderParams(orderParams kiteconnect.OrderParams) {
+func (t *Trade) SetOrderParams(orderParams *kiteconnect.OrderParams) {
 	t.OrderParams = orderParams
 }
 

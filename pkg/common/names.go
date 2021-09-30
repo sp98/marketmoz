@@ -12,6 +12,11 @@ const (
 
 	SLACK_WEBHOOK_URL = "SLACK_WEBHOOK_URL"
 	SLACK_CHANNEL     = "SLACK_MARKETMOZ_CHANNEL"
+
+	// Query files
+	OHLC_QUERY_ASSET      = "queries/ohlc.flux"
+	OHLC_QUERY_TEST_ASSET = "queries/test.flux"
+	LASTPRICE_QUERY_ASSET = "queries/lastPrice.flux"
 )
 
 var (
@@ -37,6 +42,7 @@ var (
 
 	// Slack message format
 	SLACK_NOTIFICATION_MESSAGE = `TRADE TYPE: %s
+	STATUS: %s
 	NAME: %s
 	SYMBOL: %s
 	EXCHANGE: %s

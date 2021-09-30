@@ -58,6 +58,31 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	}
 }
 
+// GetPVTStrategyLongSL returns the lowest between current candle low and previous candle low
+func GetPVTStrategyLongSL(series *techan.TimeSeries) float64 {
+	index := series.LastIndex()
+	currentLow := techan.NewLowPriceIndicator(series).Calculate(index)
+	previousLow := techan.NewLowPriceIndicator(series).Calculate(index - 1)
+
+	if currentLow.LT(previousLow) {
+		return currentLow.Float()
+	}
+	return previousLow.Float()
+
+}
+
+// GetPVTStrategyShortSL returns the highest between current candle high and previous candle high
+func GetPVTStrategyShortSL(series *techan.TimeSeries) float64 {
+	index := series.LastIndex()
+	currentHigh := techan.NewHighPriceIndicator(series).Calculate(index)
+	previousHigh := techan.NewHighPriceIndicator(series).Calculate(index - 1)
+
+	if currentHigh.GT(previousHigh) {
+		return currentHigh.Float()
+	}
+	return previousHigh.Float()
+}
+
 //GetPVTInstruments returns a list of instruments that should be traded with PVT strategy
 func GetPVTInstruments() *[]data.Instrument {
 	pvtInstruments := []data.Instrument{}

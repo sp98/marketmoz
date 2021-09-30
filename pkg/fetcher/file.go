@@ -67,7 +67,7 @@ func startFileFetcher() error {
 				}
 
 				Logger.Info("Tick", zap.Any("Last Price", fields["LastPrice"]))
-				err = db.WriteData(bucket, measurement, tag, fields, time.Now())
+				err = db.WriteTickData(bucket, measurement, tag, fields, time.Now())
 				if err != nil {
 					Logger.Error("failed to write point", zap.Any("Last Price", fields["LastPrice"]), zap.Error(err))
 				}
