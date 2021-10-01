@@ -2,38 +2,44 @@ package kite
 
 import (
 	"fmt"
+	"os"
 
 	domain "github.com/influxdata/influxdb-client-go/v2/domain"
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
-	"github.com/sp98/marketmoz/pkg/utils"
 	"go.uber.org/zap"
 )
 
 var (
 	ohlcDownSampleTaskAsset = "tasks/ohlc-ds.flux"
-	downsamplePeriods       = []string{"1m", "3m", "5m", "10m"}
 )
 
 func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
+	orgID := os.Getenv(common.INFLUXDB_ORGANIZATION_ID)
+	if orgID == "" {
+		return nil, fmt.Errorf("failed to get organization ID using env variable %s", common.INFLUXDB_ORGANIZATION_ID)
+	}
 	ohlcTasks := []domain.Task{}
-	tokens := data.GetInstrumentMap()
 
-	for tokenID, tokenDetail := range *tokens {
-
-		for _, dsPeriod := range downsamplePeriods {
-			taskName := fmt.Sprintf("OHLC-%s-%s", tokenID, dsPeriod)
-			inputBucket := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, tokenDetail.Exchange, tokenDetail.Segment)
-			id, err := utils.GetUnit32(tokenID)
+	for _, sub := range common.Subscriptions {
+		instrumentID := fmt.Sprintf("%d", sub)
+		instrumentDetail := data.GetInstrumentDetails(fmt.Sprintf("%d", sub))
+		for _, dsPeriod := range common.DownsamplePeriods {
+			taskName := fmt.Sprintf("OHLC-%s-%s", instrumentID, dsPeriod)
+			inputBucket, err := GetInputBucket(*instrumentDetail, dsPeriod)
 			if err != nil {
-				Logger.Error("failed to convert string to unit 32", zap.String("input", tokenID), zap.Error(err))
-				continue
+				Logger.Error("failed to get input bucket to downsample instrument", zap.String("instrument", instrumentDetail.Name))
+				return nil, fmt.Errorf("failed to get input bucket to downsample %s instrument", instrumentDetail.Name)
 			}
-			inputMeasurement := fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, id)
+			inputMeasurement, err := GetInputMeasurement(sub, dsPeriod)
+			if err != nil {
+				Logger.Error("failed to get input measurement to downsample instrument", zap.String("instrument", instrumentDetail.Name))
+				return nil, fmt.Errorf("failed to get input measurement to downsample %s instrument", instrumentDetail.Name)
+			}
 
-			outputBucket := fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, tokenDetail.Exchange, tokenDetail.Segment, dsPeriod)
-			outputMeasurement := fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, tokenID)
+			outputBucket := fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, instrumentDetail.InstrumentType, instrumentDetail.Segment, instrumentDetail.Exchange, dsPeriod)
+			outputMeasurement := fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, instrumentID)
 
 			dsTaskBytes, err := assets.ReadFileAndReplace(
 				ohlcDownSampleTaskAsset,
@@ -50,13 +56,14 @@ func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 				return &ohlcTasks, fmt.Errorf("failed to get data fro task file %q", ohlcDownSampleTaskAsset)
 			}
 
+			p := dsPeriod
 			status := domain.TaskStatusTypeActive
 			task := domain.Task{
 				Name:   taskName,
-				Every:  &dsPeriod,
+				Every:  &p,
 				Flux:   string(dsTaskBytes),
 				Status: &status,
-				OrgID:  common.INFLUXDB_ORGANIZATION_ID,
+				OrgID:  orgID,
 			}
 
 			ohlcTasks = append(ohlcTasks, task)
@@ -64,4 +71,30 @@ func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 	}
 
 	return &ohlcTasks, nil
+}
+
+func GetInputBucket(instrument data.Instrument, dsPeriod string) (string, error) {
+	switch dsPeriod {
+	case "1m":
+		return fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, instrument.InstrumentType, instrument.Segment, instrument.Exchange), nil
+	case "5m":
+		return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, instrument.InstrumentType, instrument.Segment, instrument.Exchange, "1m"), nil
+	case "1d":
+		return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, instrument.InstrumentType, instrument.Segment, instrument.Exchange, "5m"), nil
+	}
+
+	return "", fmt.Errorf("invalid downsample period %q", dsPeriod)
+}
+
+func GetInputMeasurement(tokenID uint32, dsPeriod string) (string, error) {
+	switch dsPeriod {
+	case "1m":
+		return fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, tokenID), nil
+	case "5m":
+		return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, fmt.Sprintf("%d", tokenID)), nil
+	case "1d":
+		return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, fmt.Sprintf("%d", tokenID)), nil
+	}
+
+	return "", fmt.Errorf("invalid downsample period %q", dsPeriod)
 }

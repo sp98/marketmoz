@@ -2,8 +2,10 @@ package kite
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
@@ -22,9 +24,6 @@ type Kite struct {
 	// TClient is the client for streaming ticks.
 	TClient *kiteticker.Ticker
 
-	// User session
-	User *kiteconnect.UserSession
-
 	// Subscriptions
 	Subscriptions []uint32
 
@@ -32,34 +31,27 @@ type Kite struct {
 	Store *influx.DB
 }
 
-func New(apiKey, apiSecret, requestToken string, subs []uint32) (*Kite, error) {
-	c, user, err := NewKiteConnectClient(apiKey, apiSecret, requestToken)
+func New(apiKey, apiSecret, accessToken string, subs []uint32) (*Kite, error) {
+	c, err := NewKiteConnectClient(apiKey, apiSecret, accessToken)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
-	tc := NewTickerClient(apiKey, user.AccessToken)
+	tc := NewTickerClient(apiKey, accessToken)
 
 	return &Kite{
 		Client:        c,
-		User:          user,
 		TClient:       tc,
 		Subscriptions: subs,
 	}, nil
 
 }
 
-func NewKiteConnectClient(apiKey, apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
+func NewKiteConnectClient(apiKey, apiSecret, accessToken string) (*kiteconnect.Client, error) {
 	kc := kiteconnect.New(apiKey)
-	// Get user details and access token
-	data, err := kc.GenerateSession(requestToken, apiSecret)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	kc.SetAccessToken(data.AccessToken)
-
-	return kc, &data, nil
+	kc.SetAccessToken(accessToken)
+	return kc, nil
 }
 
 func NewTickerClient(apiKey, accessToken string) *kiteticker.Ticker {
@@ -90,7 +82,7 @@ func (k *Kite) onTick() {
 
 func (k *Kite) onConnect() {
 	onConnect := func() {
-		Logger.Info("connected to kite successfully")
+		Logger.Info("connected to kite successfully", zap.Any("subscriptons", k.Subscriptions))
 		err := k.TClient.Subscribe(k.Subscriptions)
 		if err != nil {
 			Logger.Error("failed to add subscriptions", zap.Error(err))
@@ -153,11 +145,27 @@ func (k *Kite) CreateDownsampleTasks() error {
 		return err
 	}
 	for _, task := range *tasks {
-		_, err := k.Store.WriteTask(&task)
+		// check if task is not already created
+
+		tasks, err := k.Store.FindTask(&api.TaskFilter{Name: task.Name})
 		if err != nil {
-			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			if !strings.Contains(err.Error(), "tasks not found") {
+				Logger.Error("failed to find task", zap.String("taskname", task.Name), zap.Error(err))
+				return fmt.Errorf("failed to find task %q. Error %v", task.Name, err)
+			}
+		}
+		if len(tasks) != 0 {
+			Logger.Info("task is already created", zap.String("taskname", task.Name))
 			continue
 		}
+
+		_, err = k.Store.WriteTask(&task)
+		if err != nil {
+			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			return fmt.Errorf("failed to create task %q. Error %v", task.Name, err)
+		}
+
+		Logger.Info("Successfully created task", zap.String("taskname", task.Name))
 	}
 
 	return nil
@@ -170,7 +178,7 @@ func getRTDBucket(token string) (string, error) {
 		return "", fmt.Errorf("failed to get token details for token %q", token)
 	}
 
-	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.Exchange, td.Segment)
+	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.InstrumentType, td.Segment, td.Exchange)
 	return b, nil
 
 }
