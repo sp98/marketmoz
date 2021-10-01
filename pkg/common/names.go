@@ -21,7 +21,7 @@ const (
 
 var (
 	DownsamplePeriods = []string{"1m", "5m", "1d"}
-	Subscriptions     = []uint32{408065}
+	Subscriptions     = []uint32{408065, 738561}
 
 	// Buckets
 

@@ -49,7 +49,7 @@ func StartFetcher(source, destination string) error {
 			return fmt.Errorf("failed to create downsample tasks. Error %v", err)
 		}
 
-		//k.StartKiteFetcher()
+		k.StartKiteFetcher()
 
 	default:
 		return fmt.Errorf("invalid source type %q", source)

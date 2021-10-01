@@ -8,7 +8,6 @@ import (
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
-	"github.com/sp98/marketmoz/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -22,22 +21,18 @@ func GetOHLCDownSamplingTasks() (*[]domain.Task, error) {
 		return nil, fmt.Errorf("failed to get organization ID using env variable %s", common.INFLUXDB_ORGANIZATION_ID)
 	}
 	ohlcTasks := []domain.Task{}
-	instruments := data.GetInstrumentMap()
-	for instrumentID, instrumentDetail := range *instruments {
 
+	for _, sub := range common.Subscriptions {
+		instrumentID := fmt.Sprintf("%d", sub)
+		instrumentDetail := data.GetInstrumentDetails(fmt.Sprintf("%d", sub))
 		for _, dsPeriod := range common.DownsamplePeriods {
 			taskName := fmt.Sprintf("OHLC-%s-%s", instrumentID, dsPeriod)
-			inputBucket, err := GetInputBucket(instrumentDetail, dsPeriod)
+			inputBucket, err := GetInputBucket(*instrumentDetail, dsPeriod)
 			if err != nil {
 				Logger.Error("failed to get input bucket to downsample instrument", zap.String("instrument", instrumentDetail.Name))
 				return nil, fmt.Errorf("failed to get input bucket to downsample %s instrument", instrumentDetail.Name)
 			}
-			id, err := utils.GetUnit32(instrumentID)
-			if err != nil {
-				Logger.Error("failed to convert string to unit 32", zap.String("input", instrumentID), zap.Error(err))
-				continue
-			}
-			inputMeasurement, err := GetInputMeasurement(id, dsPeriod)
+			inputMeasurement, err := GetInputMeasurement(sub, dsPeriod)
 			if err != nil {
 				Logger.Error("failed to get input measurement to downsample instrument", zap.String("instrument", instrumentDetail.Name))
 				return nil, fmt.Errorf("failed to get input measurement to downsample %s instrument", instrumentDetail.Name)

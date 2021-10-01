@@ -178,7 +178,7 @@ func getRTDBucket(token string) (string, error) {
 		return "", fmt.Errorf("failed to get token details for token %q", token)
 	}
 
-	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.Exchange, td.Segment)
+	b := fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, td.InstrumentType, td.Segment, td.Exchange)
 	return b, nil
 
 }

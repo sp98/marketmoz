@@ -9,14 +9,14 @@ var InstrumentMap = map[string]Instrument{
 		InstrumentType: "EQ",
 		Segment:        "NSE",
 	},
-	// "93534": {
-	// 	Name:           "RELIANCE INDUSTRIES",
-	// 	Symbol:         "RELIANCE",
-	// 	Token:          uint32(93534),
-	// 	Exchange:       "NSE",
-	// 	InstrumentType: "EQ",
-	// 	Segment:        "NSE",
-	// },
+	"738561": {
+		Name:           "RELIANCE INDUSTRIES",
+		Symbol:         "RELIANCE",
+		Token:          uint32(738561),
+		Exchange:       "NSE",
+		InstrumentType: "EQ",
+		Segment:        "NSE",
+	},
 	// "59393": {
 	// 	Name:           "HAVELLS INDIA",
 	// 	Symbol:         "HAVELLS",
