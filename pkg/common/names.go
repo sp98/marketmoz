@@ -6,9 +6,9 @@ const (
 	INFLUXDB_URL             = "http://localhost:8086/"
 	INFLUXDB_TOKEN           = "m5txwvJXRbatNQM0AYKl9gkvtWVTkt_vIKU7IWotXQ-RAA-Q3i0wRrQfJTLvDmmn0e0GkCFJ0lZ3w8Pb-O_4uA=="
 
-	KITE_API_KEY       = "KITE_API_KEY"
-	KITE_REQUEST_TOKEN = "KITE_REQUEST_TOKEN"
-	KITE_API_SECRET    = "KITE_API_SECRET"
+	KITE_API_KEY      = "KITE_API_KEY"
+	KITE_ACCESS_TOKEN = "KITE_ACCESS_TOKEN"
+	KITE_API_SECRET   = "KITE_API_SECRET"
 
 	SLACK_WEBHOOK_URL = "SLACK_WEBHOOK_URL"
 	SLACK_CHANNEL     = "SLACK_MARKETMOZ_CHANNEL"
@@ -23,7 +23,7 @@ var (
 	// Buckets
 
 	// REAL_TIME_DATA_BUCKET is the bucket that stores real time data. Naming convention is
-	// <exchange>-<segment>-RTD. For example:  NSE-EQ-RTD, BSE-EQ-RTD
+	// RTD-<exchange>-<segment>. For example:  RTD-NSE-EQ, RTD-BSE-EQ
 	REAL_TIME_DATA_BUCKET = "RTD-%s-%s"
 
 	// Measurements

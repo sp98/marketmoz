@@ -118,9 +118,9 @@ func Start(name string) error {
 	// Get kite connect client
 	apiKey := os.Getenv(common.KITE_API_KEY)
 	apiSecret := os.Getenv(common.KITE_API_SECRET)
-	requestToken := os.Getenv(common.KITE_REQUEST_TOKEN)
+	accessToken := os.Getenv(common.KITE_ACCESS_TOKEN)
 
-	client, _, err := kite.NewKiteConnectClient(apiKey, apiSecret, requestToken)
+	client, err := kite.NewKiteConnectClient(apiKey, apiSecret, accessToken)
 	if err != nil {
 		//return fmt.Errorf("failed to get kite client. Error %v", err)
 	}

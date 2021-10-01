@@ -22,9 +22,6 @@ type Kite struct {
 	// TClient is the client for streaming ticks.
 	TClient *kiteticker.Ticker
 
-	// User session
-	User *kiteconnect.UserSession
-
 	// Subscriptions
 	Subscriptions []uint32
 
@@ -32,34 +29,27 @@ type Kite struct {
 	Store *influx.DB
 }
 
-func New(apiKey, apiSecret, requestToken string, subs []uint32) (*Kite, error) {
-	c, user, err := NewKiteConnectClient(apiKey, apiSecret, requestToken)
+func New(apiKey, apiSecret, accessToken string, subs []uint32) (*Kite, error) {
+	c, err := NewKiteConnectClient(apiKey, apiSecret, accessToken)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
-	tc := NewTickerClient(apiKey, user.AccessToken)
+	tc := NewTickerClient(apiKey, accessToken)
 
 	return &Kite{
 		Client:        c,
-		User:          user,
 		TClient:       tc,
 		Subscriptions: subs,
 	}, nil
 
 }
 
-func NewKiteConnectClient(apiKey, apiSecret, requestToken string) (*kiteconnect.Client, *kiteconnect.UserSession, error) {
+func NewKiteConnectClient(apiKey, apiSecret, accessToken string) (*kiteconnect.Client, error) {
 	kc := kiteconnect.New(apiKey)
-	// Get user details and access token
-	data, err := kc.GenerateSession(requestToken, apiSecret)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	kc.SetAccessToken(data.AccessToken)
-
-	return kc, &data, nil
+	kc.SetAccessToken(accessToken)
+	return kc, nil
 }
 
 func NewTickerClient(apiKey, accessToken string) *kiteticker.Ticker {
@@ -90,7 +80,7 @@ func (k *Kite) onTick() {
 
 func (k *Kite) onConnect() {
 	onConnect := func() {
-		Logger.Info("connected to kite successfully")
+		Logger.Info("connected to kite successfully", zap.Any("subscriptons", k.Subscriptions))
 		err := k.TClient.Subscribe(k.Subscriptions)
 		if err != nil {
 			Logger.Error("failed to add subscriptions", zap.Error(err))

@@ -1,10 +1,18 @@
 package data
 
 var InstrumentMap = map[string]Instrument{
-	"61348": {
+	"408065": {
+		Name:           "INFOSYS",
+		Symbol:         "INFY",
+		Token:          uint32(408065),
+		Exchange:       "NSE",
+		InstrumentType: "EQ",
+		Segment:        "NSE",
+	},
+	"93534": {
 		Name:           "RELIANCE INDUSTRIES",
 		Symbol:         "RELIANCE",
-		Token:          uint32(61348),
+		Token:          uint32(93534),
 		Exchange:       "NSE",
 		InstrumentType: "EQ",
 		Segment:        "NSE",
