@@ -153,4 +153,9 @@ func ExampleStrategy() {
 	trend := techan.NewTrendlineIndicator(closePrices, 5)
 	fmt.Println("Trend Line: ", trend.Calculate(len(records)-1))
 
+	isBullishMarubozu := techan.NewBullishMarubozuIndicator(series, big.NewFromInt(90))
+	fmt.Println("is Bullish Marubozu: ", isBullishMarubozu.Calculate(len(records)-1))
+
+	isBearishMarubozu := techan.NewBearishMarubozuIndicator(series, big.NewFromInt(90))
+	fmt.Println("is bearish Marubozu: ", isBearishMarubozu.Calculate(len(records)-1))
 }

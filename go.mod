@@ -11,7 +11,7 @@ require (
 	github.com/parnurzeal/gorequest v0.2.16 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sdcoffey/big v0.7.0
-	github.com/sp98/techan v0.12.2-0.20210928142433-a5d6ed45f3e6
+	github.com/sp98/techan v0.12.2-0.20211001050755-d184402d7408
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0

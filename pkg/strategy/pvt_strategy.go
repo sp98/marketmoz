@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"github.com/sdcoffey/big"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/rule"
 	"github.com/sp98/techan"
@@ -23,13 +24,13 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	macdHistogramIndicator := techan.NewMACDHistogramIndicator(techan.NewMACDIndicator(closePriceIndicator, 12, 26), 9)
 	macdHistogramConstantIndicator := techan.NewConstantIndicator(0)
 
-	isBullish := techan.NewBullishIndicator(series)
-	isBearish := techan.NewBearishIndicator(series)
+	constantONE := techan.NewConstantIndicator(1)
 
 	// Pivot Point
 	closePrice := series.LastCandle().ClosePrice
 
 	// Set rules
+
 	// TODO: is Trend Line slope greater than 10 enough
 	trendRule := rule.NewAbsGreaterRule(techan.NewTrendlineIndicator(closePriceIndicator, 5), techan.NewConstantIndicator(10))
 
@@ -44,7 +45,10 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	)
 
 	longEntryRule.SetOrRule(
-		rule.NewEqualRule(isBullish, techan.NewConstantIndicator(1)),
+		// is Bullish Marubozu candle OR is Bullish Harami OR is Bullish Engulfing
+		rule.NewEqualRule(techan.NewBullishMarubozuIndicator(series, big.NewFromInt(90)), constantONE),
+		rule.NewEqualRule(techan.NewBullishEngulfingIndicator(series), constantONE),
+		rule.NewEqualRule(techan.NewBullishHaramiIndicator(series), constantONE),
 	)
 
 	// Set Short Entry rule
@@ -58,7 +62,10 @@ func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 	)
 
 	shortEntryRule.SetOrRule(
-		rule.NewEqualRule(isBearish, techan.NewConstantIndicator(1)),
+		// Is Bearish Marubozu candle OR is Bearish Harami OR is Bearish Engulfing
+		rule.NewEqualRule(techan.NewBearishMarubozuIndicator(series, big.NewFromInt(90)), constantONE),
+		rule.NewEqualRule(techan.NewBearishEngulfingIndicator(series), constantONE),
+		rule.NewEqualRule(techan.NewBearishHaramiIndicator(series), constantONE),
 	)
 
 	return &RuleStrategy{
