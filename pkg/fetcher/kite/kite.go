@@ -2,8 +2,10 @@ package kite
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
@@ -143,11 +145,27 @@ func (k *Kite) CreateDownsampleTasks() error {
 		return err
 	}
 	for _, task := range *tasks {
-		_, err := k.Store.WriteTask(&task)
+		// check if task is not already created
+
+		tasks, err := k.Store.FindTask(&api.TaskFilter{Name: task.Name})
 		if err != nil {
-			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			if !strings.Contains(err.Error(), "tasks not found") {
+				Logger.Error("failed to find task", zap.String("taskname", task.Name), zap.Error(err))
+				return fmt.Errorf("failed to find task %q. Error %v", task.Name, err)
+			}
+		}
+		if len(tasks) != 0 {
+			Logger.Info("task is already created", zap.String("taskname", task.Name))
 			continue
 		}
+
+		_, err = k.Store.WriteTask(&task)
+		if err != nil {
+			Logger.Error("failed to create task", zap.String("taskname", task.Name), zap.Error(err))
+			return fmt.Errorf("failed to create task %q. Error %v", task.Name, err)
+		}
+
+		Logger.Info("Successfully created task", zap.String("taskname", task.Name))
 	}
 
 	return nil

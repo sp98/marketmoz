@@ -28,18 +28,28 @@ func StartFetcher(source, destination string) error {
 			return fmt.Errorf("failed to get Kite API key or request token from evn. API Key: %q. Request Token: %q", apiKey, accessToken)
 		}
 
-		k, err := kite.New(apiKey, apiSecret, accessToken, []uint32{408065})
+		k, err := kite.New(apiKey, apiSecret, accessToken, common.Subscriptions)
 		if err != nil {
 			return fmt.Errorf("failed to create new Kite connection client. Error %v", err)
 		}
 
 		k.Store = influx.NewDB(ctx, common.INFLUXDB_ORGANIZATION, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
+
+		// Init buckets
+		err = k.Store.InitBuckets()
+		if err != nil {
+			Logger.Error("failed to initialize influx db buckets", zap.Error(err))
+			return fmt.Errorf("failed to initialize influx db buckets. Error %v", err)
+		}
+
+		// Init downsample tasks
 		err = k.CreateDownsampleTasks()
 		if err != nil {
 			Logger.Error("failed to create downsample tasks", zap.Error(err))
 			return fmt.Errorf("failed to create downsample tasks. Error %v", err)
 		}
-		k.StartKiteFetcher()
+
+		//k.StartKiteFetcher()
 
 	default:
 		return fmt.Errorf("invalid source type %q", source)

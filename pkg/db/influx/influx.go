@@ -2,6 +2,8 @@ package influx
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -27,6 +29,28 @@ func NewDB(ctx context.Context, org, url, token string) *DB {
 	}
 }
 
+func (db DB) InitBuckets() error {
+	buckets, err := GetBuckets()
+	if err != nil {
+		return fmt.Errorf("failed to get buckets. Error %v", err)
+	}
+
+	for _, b := range *buckets {
+		res, err := db.Client.BucketsAPI().CreateBucket(db.Context, &b)
+		if err != nil {
+			if strings.Contains(err.Error(), "conflict") {
+				Logger.Info("Bucket already created", zap.String("bucket", b.Name))
+				continue
+			}
+			return fmt.Errorf("failed to create bucket. Error %v", err)
+		}
+
+		Logger.Info("Successfully created bucket", zap.String("bucket", res.Name))
+	}
+
+	return nil
+}
+
 func (db DB) WriteTickData(bucket, measurement string, tags map[string]string,
 	fields map[string]interface{}, t time.Time) error {
 	writeAPI := db.Client.WriteAPIBlocking(db.Organization, bucket)
@@ -49,6 +73,14 @@ func (db DB) GetData(query string) (*api.QueryTableResult, error) {
 
 func (db DB) WriteTask(task *domain.Task) (*domain.Task, error) {
 	return db.Client.TasksAPI().CreateTask(db.Context, task)
+}
+
+func (db DB) FindTask(filter *api.TaskFilter) ([]domain.Task, error) {
+	return db.Client.TasksAPI().FindTasks(db.Context, filter)
+}
+
+func (db DB) DeleteTask(task *domain.Task) error {
+	return db.Client.TasksAPI().DeleteTask(db.Context, task)
 }
 
 func (db DB) DeleteBucket(bucket string) error {
