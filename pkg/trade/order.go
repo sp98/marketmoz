@@ -31,9 +31,16 @@ func (o *Order) Execute(t *Trade) {
 	if t.nxtPos != "" {
 		switch t.nxtPos {
 		case ENTER_LONG, ENTER_SHORT:
-			res, err = t.KClient.PlaceOrder("regular", *t.OrderParams)
+			// res, err = t.KClient.PlaceOrder("regular", *t.OrderParams)
+			// TODO: remove fake error and place orders
+			err = fmt.Errorf("fake error")
 		case EXIT_LONG, EXIT_SHORT:
 			//t.KClient.ExitOrder("regular", "", "")
+			Logger.Info("TODO: Implement EXIT_LONG and EXIT_SHORT. Return")
+			return
+		default:
+			Logger.Info("no position to execute. Return")
+			return
 		}
 
 		if err != nil {
@@ -67,7 +74,7 @@ func notificationMessage(t *Trade, status string) slack.Payload {
 		t.nxtPos,
 		status,
 		t.Instrument.Name, t.Instrument.Symbol,
-		t.Instrument.Exchange, t.Instrument.Segment, utils.CurrentTime())
+		t.Instrument.Exchange, t.Instrument.Segment, t.OrderParams.TriggerPrice, utils.CurrentTime())
 
 	return slack.Payload{
 		Text:    message,
