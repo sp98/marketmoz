@@ -1,7 +1,9 @@
 package start
 
 import (
+	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/trade"
+	"github.com/sp98/marketmoz/pkg/utils"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -13,10 +15,14 @@ var strategyCmd = &cobra.Command{
 	Use:   "strategy",
 	Short: "Start the strategy server",
 	Run: func(cmd *cobra.Command, args []string) {
-		Logger.Info("Starting strategy sever", zap.String("name", name))
-		err := trade.Start(name)
+		Logger.Info("Starting strategy", zap.String("name", name), zap.String("interval", interval))
+		if !utils.Contains(common.DownsamplePeriods, interval) {
+			Logger.Error("invalid strategy interval", zap.String("interval", interval))
+			return
+		}
+		err := trade.Start(name, interval)
 		if err != nil {
-			Logger.Error("failed to start strategies server", zap.Error(err))
+			Logger.Error("failed to run strategy", zap.String("strategy", name), zap.Error(err))
 		}
 	},
 }

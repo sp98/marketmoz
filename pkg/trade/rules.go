@@ -1,8 +1,6 @@
 package trade
 
 import (
-	"fmt"
-
 	"github.com/sp98/marketmoz/pkg/strategy"
 )
 
@@ -11,7 +9,7 @@ type Rules struct {
 }
 
 func (r *Rules) Execute(t *Trade) {
-	fmt.Println("Flow: Set Rules")
+	Logger.Info("Flow: Set Rules")
 	t.SetStrategy(strategy.PVTStrategyRules(t.Series))
 
 	if r.next != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/utils"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
+	"go.uber.org/zap"
 )
 
 type Order struct {
@@ -15,7 +16,7 @@ type Order struct {
 }
 
 func (o *Order) Execute(t *Trade) {
-	fmt.Println("Flow: Create/Modify/Exit order")
+	Logger.Info("Flow: Create/Modify/Exit order")
 
 	// Reset trade properties like NextPosition and OrderParams at the end
 	defer func() {
@@ -36,17 +37,18 @@ func (o *Order) Execute(t *Trade) {
 		}
 
 		if err != nil {
-			fmt.Printf("failed to execute %s order. Error %v\n", t.nxtPos, err)
+			Logger.Error("failed to execute order", zap.Any("order", t.nxtPos), zap.Error(err))
 			status = "FAILURE"
 		} else {
-			fmt.Printf("Successfully executed %s order. Response %+v\n", t.nxtPos, res)
+			Logger.Info("Successfully executed order", zap.Any("order", t.nxtPos), zap.Any("response", res))
 			status = "SUCCESS"
 		}
 
 		message := notificationMessage(t, status)
 		err := t.Notify(message)
 		if err != nil {
-			fmt.Printf("failed to send notification message. Error %v\n", err)
+			Logger.Error("failed to send notification message", zap.Errors("error", err))
+			return
 		}
 	}
 

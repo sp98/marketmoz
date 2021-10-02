@@ -16,3 +16,12 @@ func GetUnit32(str string) (uint32, error) {
 	}
 	return uint32(u), nil
 }
+
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
