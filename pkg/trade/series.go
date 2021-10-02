@@ -8,6 +8,7 @@ import (
 	"github.com/sp98/marketmoz/assets"
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/techan"
+	"go.uber.org/zap"
 )
 
 type Series struct {
@@ -15,11 +16,11 @@ type Series struct {
 }
 
 func (s *Series) Execute(t *Trade) {
-	fmt.Println("Flow: Get Time Series data")
+	Logger.Info("Flow: Get Time Series data")
 	// Get OHLC data and build the strategy rules
 	series, err := getSeries(t)
 	if err != nil {
-		fmt.Println("failed to get ohlc data for the instrument - ", t.Instrument.Name)
+		Logger.Error("failed to get ohlc data for the instrument ", zap.String("instruement", t.Instrument.Name), zap.Error(err))
 		return
 	}
 	// TODO: create cache of the series and only add new candle every minute. If cache is empty then get new series everytime
@@ -36,9 +37,10 @@ func (s *Series) SetNext(next Flow) {
 
 func getSeries(t *Trade) (*techan.TimeSeries, error) {
 	series := techan.NewTimeSeries()
-	query, err := GetTestQuery()
+	query, err := t.Instrument.GetQuery(t.Interval, common.OHLC_QUERY_ASSET)
+	//query, err := GetTestQuery()
 	if err != nil {
-		fmt.Printf("failed to get query. Error %v\n", err)
+		Logger.Error("failed to get query", zap.Error(err))
 		return nil, err
 	}
 
@@ -46,8 +48,9 @@ func getSeries(t *Trade) (*techan.TimeSeries, error) {
 	if err != nil {
 		return nil, err
 	}
+	interval := t.GetIntervalTime()
 	for _, datum := range *ohlcList {
-		period := techan.NewTimePeriod(time.Unix(datum.Time, 0), time.Minute*1)
+		period := techan.NewTimePeriod(time.Unix(datum.Time, 0), interval)
 		candle := techan.NewCandle(period)
 		candle.OpenPrice = big.NewFromString(fmt.Sprintf("%f", datum.Open))
 		candle.ClosePrice = big.NewFromString(fmt.Sprintf("%f", datum.Close))

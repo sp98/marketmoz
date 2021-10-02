@@ -8,6 +8,7 @@ import (
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/utils"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
+	"go.uber.org/zap"
 )
 
 type Order struct {
@@ -15,7 +16,7 @@ type Order struct {
 }
 
 func (o *Order) Execute(t *Trade) {
-	fmt.Println("Flow: Create/Modify/Exit order")
+	Logger.Info("Flow: Create/Modify/Exit order")
 
 	// Reset trade properties like NextPosition and OrderParams at the end
 	defer func() {
@@ -30,23 +31,31 @@ func (o *Order) Execute(t *Trade) {
 	if t.nxtPos != "" {
 		switch t.nxtPos {
 		case ENTER_LONG, ENTER_SHORT:
-			res, err = t.KClient.PlaceOrder("regular", *t.OrderParams)
+			// res, err = t.KClient.PlaceOrder("regular", *t.OrderParams)
+			// TODO: remove fake error and place orders
+			err = fmt.Errorf("fake error")
 		case EXIT_LONG, EXIT_SHORT:
 			//t.KClient.ExitOrder("regular", "", "")
+			Logger.Info("TODO: Implement EXIT_LONG and EXIT_SHORT. Return")
+			return
+		default:
+			Logger.Info("no position to execute. Return")
+			return
 		}
 
 		if err != nil {
-			fmt.Printf("failed to execute %s order. Error %v\n", t.nxtPos, err)
+			Logger.Error("failed to execute order", zap.Any("order", t.nxtPos), zap.Error(err))
 			status = "FAILURE"
 		} else {
-			fmt.Printf("Successfully executed %s order. Response %+v\n", t.nxtPos, res)
+			Logger.Info("Successfully executed order", zap.Any("order", t.nxtPos), zap.Any("response", res))
 			status = "SUCCESS"
 		}
 
 		message := notificationMessage(t, status)
 		err := t.Notify(message)
 		if err != nil {
-			fmt.Printf("failed to send notification message. Error %v\n", err)
+			Logger.Error("failed to send notification message", zap.Errors("error", err))
+			return
 		}
 	}
 
@@ -65,7 +74,7 @@ func notificationMessage(t *Trade, status string) slack.Payload {
 		t.nxtPos,
 		status,
 		t.Instrument.Name, t.Instrument.Symbol,
-		t.Instrument.Exchange, t.Instrument.Segment, utils.CurrentTime())
+		t.Instrument.Exchange, t.Instrument.Segment, t.OrderParams.TriggerPrice, utils.CurrentTime())
 
 	return slack.Payload{
 		Text:    message,

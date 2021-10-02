@@ -55,6 +55,7 @@ var (
 	SYMBOL: %s
 	EXCHANGE: %s
 	SEGMENT: %s
+	STOPLOSS: %s
 	TIME: %s
 	______________________________________
 

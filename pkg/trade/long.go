@@ -6,6 +6,7 @@ import (
 	"github.com/sp98/marketmoz/pkg/common"
 	"github.com/sp98/marketmoz/pkg/strategy"
 	kiteconnect "github.com/zerodha/gokiteconnect/v4"
+	"go.uber.org/zap"
 )
 
 type EnterLong struct {
@@ -13,29 +14,31 @@ type EnterLong struct {
 }
 
 func (el *EnterLong) Execute(t *Trade) {
-	fmt.Println("Flow: Enter Long Position")
+	Logger.Info("Flow: Enter Long Position")
 
 	if t.nxtPos == ENTER_LONG {
 		if t.Strategy.ShouldEnterLong(t.Series.LastIndex()) {
 			// Find R2R ratio
 			triggerPrice := strategy.GetPVTStrategyLongSL(t.Series)
-			query, err := t.Instrument.GetQuery("5m", common.LASTPRICE_QUERY_ASSET)
+			query, err := t.Instrument.GetQuery(t.Interval, common.LASTPRICE_QUERY_ASSET)
 			if err != nil {
-				fmt.Printf("failed to get query to get last price. Error %+v\n", err)
+				Logger.Error("failed to get query for last price", zap.Error(err))
+				return
 			}
 
 			// How to ensure that last Price data is from the last time frame
 			lastPrice, err := t.Instrument.GetLastPrice(t.DB, query)
 			if err != nil {
-				fmt.Printf("failed to get last. Error %+v\n", err)
+				Logger.Error("failed to to get last price", zap.Error(err))
 			}
 
 			if triggerPrice > lastPrice {
-				fmt.Printf("trigger price can't be higher than last price for %s trade\n", t.nxtPos)
+				Logger.Warn("trigger price can't be higher than last price for next trade", zap.Any("nextTrade", t.nxtPos))
+				return
 			}
 			risk := lastPrice - triggerPrice
 			reward := lastPrice + (2 * risk) // 1:2
-			fmt.Printf("Risk:Reward: %f/%f\n", risk, reward)
+			Logger.Info("Risk:Reward ", zap.Float64("risk", risk), zap.Float64("reward", reward))
 
 			// TODO: Ignore if risk is too high?
 
