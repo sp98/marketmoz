@@ -20,7 +20,7 @@ func (el *EnterLong) Execute(t *Trade) {
 		if t.Strategy.ShouldEnterLong(t.Series.LastIndex()) {
 			// Find R2R ratio
 			triggerPrice := strategy.GetPVTStrategyLongSL(t.Series)
-			query, err := t.Instrument.GetQuery("5m", common.LASTPRICE_QUERY_ASSET)
+			query, err := t.Instrument.GetQuery(t.Interval, common.LASTPRICE_QUERY_ASSET)
 			if err != nil {
 				Logger.Error("failed to get query for last price", zap.Error(err))
 				return

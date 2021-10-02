@@ -37,7 +37,8 @@ func (s *Series) SetNext(next Flow) {
 
 func getSeries(t *Trade) (*techan.TimeSeries, error) {
 	series := techan.NewTimeSeries()
-	query, err := GetTestQuery()
+	query, err := t.Instrument.GetQuery(t.Interval, common.OHLC_QUERY_ASSET)
+	//query, err := GetTestQuery()
 	if err != nil {
 		Logger.Error("failed to get query", zap.Error(err))
 		return nil, err

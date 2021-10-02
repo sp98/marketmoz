@@ -86,9 +86,7 @@ func (t *Trade) GetIntervalTime() time.Duration {
 
 	default:
 		return time.Minute
-
 	}
-
 }
 
 func (t *Trade) SetNextPosition(position NextPosition) {

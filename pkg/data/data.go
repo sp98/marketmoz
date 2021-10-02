@@ -49,20 +49,20 @@ func NewInstrument(name, symbol, exchange, instrumentType, segment string, token
 }
 
 func (i Instrument) GetBucket(timeFrame string) string {
-	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, i.Exchange, i.Segment, timeFrame)
+	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, i.InstrumentType, i.Segment, i.Exchange, timeFrame)
 }
 
 func (i Instrument) GetMeasurement() string {
 	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, i.Token)
 }
 
-func (i Instrument) GetQuery(timeFrame, queryFile string) (string, error) {
+func (i Instrument) GetQuery(interval, queryFile string) (string, error) {
 	queryBytes, err := assets.ReadFileAndReplace(
 		queryFile,
 		[]string{
-			"${INPUT_BUCKET}", i.GetBucket(timeFrame),
+			"${INPUT_BUCKET}", i.GetBucket(interval),
 			"${INPUT_MEASUREMENT}", i.GetMeasurement(),
-			"${INPUT_EVERY}", timeFrame,
+			"${INPUT_EVERY}", interval,
 		},
 	)
 
