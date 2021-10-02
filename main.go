@@ -56,4 +56,5 @@ func initLogger() {
 	kite.Logger = logger
 	influx.Logger = logger
 	data.Logger = logger
+	get.Logger = logger
 }
