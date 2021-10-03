@@ -128,7 +128,7 @@ func (t *Trade) start(ctx context.Context, wg *sync.WaitGroup) {
 	flow := NewTradeFlow()
 	for range utils.Every(ctx, start, t.GetIntervalTime()) {
 		flow.Execute(t)
-		fmt.Printf("Trade - %+v\n", t)
+		Logger.Info("Trade", zap.Any("trade", t))
 	}
 }
 
@@ -169,7 +169,7 @@ func Start(name, interval string) error {
 		return fmt.Errorf("invalid strategy %q", name)
 	}
 
-	Logger.Info("Trading ending at ", zap.String("strategy", name), zap.String("endtime", utils.CurrentTime()))
+	Logger.Info("End trading ", zap.String("strategy", name), zap.String("endtime", utils.CurrentTime()))
 
 	// TODO: Clean up after trade ended.
 	// 1. Exit any pending trade.
