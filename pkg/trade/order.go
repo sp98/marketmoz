@@ -15,7 +15,7 @@ type Order struct {
 	next Flow
 }
 
-func (o *Order) Execute(t *Trade) {
+func (o *Order) Execute(t *Trade) error {
 	Logger.Info("Flow: Create/Modify/Exit order")
 
 	// Reset trade properties like NextPosition and OrderParams at the end
@@ -37,10 +37,10 @@ func (o *Order) Execute(t *Trade) {
 		case EXIT_LONG, EXIT_SHORT:
 			//t.KClient.ExitOrder("regular", "", "")
 			Logger.Info("TODO: Implement EXIT_LONG and EXIT_SHORT. Return")
-			return
+			return nil
 		default:
 			Logger.Info("no position to execute. Return")
-			return
+			return nil
 		}
 
 		if err != nil {
@@ -54,14 +54,15 @@ func (o *Order) Execute(t *Trade) {
 		message := notificationMessage(t, status)
 		err := t.Notify(message)
 		if err != nil {
-			Logger.Error("failed to send notification message", zap.Errors("error", err))
-			return
+			return fmt.Errorf("failed to send notification message. Error %v", err)
 		}
 	}
 
 	if o.next != nil {
-		o.next.Execute(t)
+		return o.next.Execute(t)
 	}
+
+	return nil
 }
 
 func (o *Order) SetNext(next Flow) {

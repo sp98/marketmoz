@@ -127,7 +127,10 @@ func (t *Trade) start(ctx context.Context, wg *sync.WaitGroup) {
 	start, _ := utils.StartTimeAndLoc()
 	flow := NewTradeFlow()
 	for range utils.Every(ctx, start, t.GetIntervalTime()) {
-		flow.Execute(t)
+		err := flow.Execute(t)
+		if err != nil {
+			Logger.Error("failed to execute trade flow", zap.String("strategy", t.Name), zap.String("instrument", t.Instrument.Name), zap.Error(err))
+		}
 		Logger.Info("Trade", zap.Any("trade", t))
 	}
 }

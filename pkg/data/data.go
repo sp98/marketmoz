@@ -76,7 +76,6 @@ func (i Instrument) GetQuery(interval, queryFile string) (string, error) {
 func (i Instrument) GetLastPrice(db *influx.DB, query string) (float64, error) {
 	result, err := db.GetData(query)
 	if err != nil {
-		Logger.Error("failed to get ohlc data from the influx db.", zap.Error(err))
 		return -1, fmt.Errorf("failed to get ohlc data from the influx db. Error %v", err)
 	}
 
@@ -96,7 +95,6 @@ func (i Instrument) GetLastPrice(db *influx.DB, query string) (float64, error) {
 func (i Instrument) GetOHLC(db *influx.DB, query string) (*[]OHLC, error) {
 	result, err := db.GetData(query)
 	if err != nil {
-		Logger.Error("failed to get ohlc data from the influx db.", zap.Error(err))
 		return nil, fmt.Errorf("failed to get ohlc data from the influx db. Error %v", err)
 	}
 
@@ -119,8 +117,7 @@ func parseLastPrice(in *api.QueryTableResult) (*[]LastPrice, error) {
 	lp := &[]LastPrice{}
 	err = ms.Decode(out, lp)
 	if err != nil {
-		Logger.Error("failed to decode parsed db data into ohlc struct", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("failed to decode parsed db data into ohlc struct. Error %v", err)
 	}
 
 	return lp, nil
@@ -135,8 +132,7 @@ func parseOHLC(in *api.QueryTableResult) (*[]OHLC, error) {
 	ohlc := &[]OHLC{}
 	err = ms.Decode(out, ohlc)
 	if err != nil {
-		Logger.Error("failed to decode parsed db data into ohlc struct", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("failed to decode parsed db data into ohlc struct. Error %v", err)
 	}
 
 	return ohlc, nil

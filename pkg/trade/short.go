@@ -13,7 +13,7 @@ type EnterShort struct {
 	next Flow
 }
 
-func (es *EnterShort) Execute(t *Trade) {
+func (es *EnterShort) Execute(t *Trade) error {
 	fmt.Println("Flow: Enter Short Position")
 
 	if t.nxtPos == ENTER_SHORT {
@@ -22,8 +22,7 @@ func (es *EnterShort) Execute(t *Trade) {
 			triggerPrice := strategy.GetPVTStrategyShortSL(t.Series)
 			query, err := t.Instrument.GetQuery(t.Interval, common.LASTPRICE_QUERY_ASSET)
 			if err != nil {
-				Logger.Error("failed to get query for last price", zap.Error(err))
-				return
+				return fmt.Errorf("failed to get query for last price for instrument %q. Error %v", t.Instrument.Name, err)
 			}
 
 			// How to ensure that last Price data is from the last time frame
@@ -34,7 +33,7 @@ func (es *EnterShort) Execute(t *Trade) {
 
 			if triggerPrice < lastPrice {
 				Logger.Warn("trigger price can't be lower than last price for trade", zap.Any("nextPosition", t.nxtPos))
-				return
+				return nil
 			}
 			risk := triggerPrice - lastPrice
 			reward := lastPrice - (2 * risk) // 1:2
@@ -65,8 +64,10 @@ func (es *EnterShort) Execute(t *Trade) {
 	}
 
 	if es.next != nil {
-		es.next.Execute(t)
+		return es.next.Execute(t)
 	}
+
+	return nil
 }
 
 func (es *EnterShort) SetNext(next Flow) {
@@ -77,7 +78,7 @@ type ExitShort struct {
 	next Flow
 }
 
-func (es *ExitShort) Execute(t *Trade) {
+func (es *ExitShort) Execute(t *Trade) error {
 	fmt.Println("Flow: Exit Short Position")
 
 	if t.nxtPos == EXIT_SHORT {
@@ -86,8 +87,10 @@ func (es *ExitShort) Execute(t *Trade) {
 	}
 
 	if es.next != nil {
-		es.next.Execute(t)
+		return es.next.Execute(t)
 	}
+
+	return nil
 }
 
 func (es *ExitShort) SetNext(next Flow) {

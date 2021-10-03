@@ -28,7 +28,7 @@ func StartTimeAndLoc() (time.Time, *time.Location) {
 func EndTime() time.Time {
 	now := time.Now()
 	yyyy, mm, dd := now.Date()
-	return time.Date(yyyy, mm, dd, 15, 0, 0, 0, now.Location())
+	return time.Date(yyyy, mm, dd, 15, 10, 0, 0, now.Location())
 }
 
 func CurrentTime() string {

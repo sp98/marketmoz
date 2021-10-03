@@ -6,13 +6,12 @@ type Position struct {
 	next Flow
 }
 
-func (p *Position) Execute(t *Trade) {
+func (p *Position) Execute(t *Trade) error {
 	fmt.Println("Flow: Get Position")
 
 	orders, err := t.KClient.GetOrders()
 	if err != nil {
-		fmt.Println("failed to get orders")
-		return
+		return fmt.Errorf("failed to get existing orders. Error %v", err)
 	}
 
 	// Set next position to ENTER_LONG
@@ -30,8 +29,10 @@ func (p *Position) Execute(t *Trade) {
 	}
 
 	if p.next != nil {
-		p.next.Execute(t)
+		return p.next.Execute(t)
 	}
+
+	return nil
 }
 
 func (p *Position) SetNext(next Flow) {
