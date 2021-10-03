@@ -20,7 +20,7 @@ func (es *EnterShort) Execute(t *Trade) error {
 		if t.Strategy.ShouldEnterShort(t.Series.LastIndex()) {
 			// Find R2R ratio
 			triggerPrice := strategy.GetPVTStrategyShortSL(t.Series)
-			query, err := t.Instrument.GetQuery(t.Interval, common.LASTPRICE_QUERY_ASSET)
+			query, err := t.Instrument.GetRTDQuery(t.Interval, common.LASTPRICE_QUERY_ASSET)
 			if err != nil {
 				return fmt.Errorf("failed to get query for last price for instrument %q. Error %v", t.Instrument.Name, err)
 			}

@@ -17,6 +17,9 @@ const (
 	OHLC_QUERY_ASSET      = "queries/ohlc.flux"
 	OHLC_QUERY_TEST_ASSET = "queries/test.flux"
 	LASTPRICE_QUERY_ASSET = "queries/lastPrice.flux"
+
+	// Interval:
+	ONE_DAY = "1d"
 )
 
 var (
