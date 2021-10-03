@@ -17,22 +17,30 @@ var InstrumentMap = map[string]Instrument{
 		InstrumentType: "EQ",
 		Segment:        "NSE",
 	},
-	// "59393": {
-	// 	Name:           "HAVELLS INDIA",
-	// 	Symbol:         "HAVELLS",
-	// 	Token:          uint32(59393),
-	// 	Exchange:       "NSE",
-	// 	InstrumentType: "EQ",
-	// 	Segment:        "NSE",
-	// },
-	// "59163": {
-	// 	Name:           "INFOSYS",
-	// 	Symbol:         "INFY",
-	// 	Token:          uint32(59163),
-	// 	Exchange:       "NSE",
-	// 	InstrumentType: "EQ",
-	// 	Segment:        "NSE",
-	// },
+	"5633": {
+		Name:           "ACC",
+		Symbol:         "ACC",
+		Token:          uint32(5633),
+		Exchange:       "NSE",
+		InstrumentType: "EQ",
+		Segment:        "NSE",
+	},
+	"2513665": {
+		Name:           "HAVELLS INDIA",
+		Symbol:         "HAVELLS",
+		Token:          uint32(2513665),
+		Exchange:       "NSE",
+		InstrumentType: "EQ",
+		Segment:        "NSE",
+	},
+	"492033": {
+		Name:           "KOTAK MAHINDRA BANK",
+		Symbol:         "KOTAKBANK",
+		Token:          uint32(492033),
+		Exchange:       "NSE",
+		InstrumentType: "EQ",
+		Segment:        "NSE",
+	},
 
 	//TODO: Add more instruments
 }
