@@ -1,6 +1,6 @@
 package trade
 
 type Flow interface {
-	Execute(*Trade)
+	Execute(*Trade) error
 	SetNext(Flow)
 }

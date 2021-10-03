@@ -13,7 +13,7 @@ var interval string
 
 var strategyCmd = &cobra.Command{
 	Use:   "strategy",
-	Short: "Start the strategy server",
+	Short: "Start the trading strategy",
 	Run: func(cmd *cobra.Command, args []string) {
 		Logger.Info("Starting strategy", zap.String("name", name), zap.String("interval", interval))
 		if !utils.Contains(common.DownsamplePeriods, interval) {

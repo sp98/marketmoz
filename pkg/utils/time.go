@@ -22,13 +22,13 @@ func ToTime(in string) (time.Time, error) {
 func StartTimeAndLoc() (time.Time, *time.Location) {
 	now := time.Now()
 	yyyy, mm, dd := now.Date()
-	return time.Date(yyyy, mm, dd, 16, 53, 2, 0, now.Location()), now.Location()
+	return time.Date(yyyy, mm, dd, 9, 45, 2, 0, now.Location()), now.Location()
 }
 
 func EndTime() time.Time {
 	now := time.Now()
 	yyyy, mm, dd := now.Date()
-	return time.Date(yyyy, mm, dd, 16, 53, 30, 0, now.Location())
+	return time.Date(yyyy, mm, dd, 15, 10, 0, 0, now.Location())
 }
 
 func CurrentTime() string {

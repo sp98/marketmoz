@@ -15,20 +15,21 @@ type Series struct {
 	next Flow
 }
 
-func (s *Series) Execute(t *Trade) {
+func (s *Series) Execute(t *Trade) error {
 	Logger.Info("Flow: Get Time Series data")
 	// Get OHLC data and build the strategy rules
 	series, err := getSeries(t)
 	if err != nil {
-		Logger.Error("failed to get ohlc data for the instrument ", zap.String("instruement", t.Instrument.Name), zap.Error(err))
-		return
+		return fmt.Errorf("failed to get ohlc data for the instrument %q. Error %v", t.Instrument.Name, err)
 	}
 	// TODO: create cache of the series and only add new candle every minute. If cache is empty then get new series everytime
 	t.Series = series
 
 	if s.next != nil {
-		s.next.Execute(t)
+		return s.next.Execute(t)
 	}
+
+	return nil
 }
 
 func (s *Series) SetNext(next Flow) {
