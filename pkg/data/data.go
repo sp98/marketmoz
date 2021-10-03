@@ -48,20 +48,51 @@ func NewInstrument(name, symbol, exchange, instrumentType, segment string, token
 	}
 }
 
-func (i Instrument) GetBucket(timeFrame string) string {
+// GetDSBucket returns bucket for downsampled data
+func (i Instrument) GetDSBucket(timeFrame string) string {
 	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_BUCKET, i.InstrumentType, i.Segment, i.Exchange, timeFrame)
 }
 
-func (i Instrument) GetMeasurement() string {
+// GetDSMeasurement returns measurement for downsampled data
+func (i Instrument) GetDSMeasurement() string {
 	return fmt.Sprintf(common.OHLC_DOWNSAMPLE_MEASUREMENT, i.Token)
 }
 
-func (i Instrument) GetQuery(interval, queryFile string) (string, error) {
+// GetDSQuery returns flux query for downsampled buckets
+func (i Instrument) GetDSQuery(interval, queryFile string) (string, error) {
 	queryBytes, err := assets.ReadFileAndReplace(
 		queryFile,
 		[]string{
-			"${INPUT_BUCKET}", i.GetBucket(interval),
-			"${INPUT_MEASUREMENT}", i.GetMeasurement(),
+			"${INPUT_BUCKET}", i.GetDSBucket(interval),
+			"${INPUT_MEASUREMENT}", i.GetDSMeasurement(),
+			"${INPUT_EVERY}", interval,
+		},
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(queryBytes), nil
+}
+
+// GetRTDBucket returns bucket for real time data
+func (i Instrument) GetRTDBucket() string {
+	return fmt.Sprintf(common.REAL_TIME_DATA_BUCKET, i.InstrumentType, i.Segment, i.Exchange)
+}
+
+// GetRTDMeasurement returns measurement for real time data
+func (i Instrument) GetRTDMeasurement() string {
+	return fmt.Sprintf(common.REAL_TIME_DATA_MEASUREMENT, i.Token)
+}
+
+// GetRTDQuery returns flux query to get real time data
+func (i Instrument) GetRTDQuery(interval, queryFile string) (string, error) {
+	queryBytes, err := assets.ReadFileAndReplace(
+		queryFile,
+		[]string{
+			"${INPUT_BUCKET}", i.GetRTDBucket(),
+			"${INPUT_MEASUREMENT}", i.GetRTDMeasurement(),
 			"${INPUT_EVERY}", interval,
 		},
 	)

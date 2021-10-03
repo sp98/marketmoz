@@ -39,7 +39,7 @@ var ohlcCmd = &cobra.Command{
 		db := influx.NewDB(ctx, organization, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 		defer db.Client.Close()
 		instrument := data.NewInstrument("", "", exchange, "", segment, token)
-		query, err := instrument.GetQuery(cadence, common.OHLC_QUERY_ASSET)
+		query, err := instrument.GetDSQuery(cadence, common.OHLC_QUERY_ASSET)
 		if err != nil {
 			return
 		}
