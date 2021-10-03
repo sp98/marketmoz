@@ -7,7 +7,7 @@ import (
 	"github.com/sp98/techan"
 )
 
-var PVTInstruments = []string{"408065", "738561"}
+var PVTInstruments = []string{"408065", "738561", "5633", "2513665", "492033"}
 
 func PVTStrategyRules(series *techan.TimeSeries) Strategy {
 
