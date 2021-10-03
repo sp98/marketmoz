@@ -6,7 +6,12 @@ DATA = from(bucket: input.bucket)
     |> range(start: -task.every)
     |> filter(fn: (r) => r["_measurement"] == input.measurement)
     |> filter(fn: (r) => r["_field"] == "LastPrice")
-    |> filter(fn: (r) => r["stock"] == "nifty")
+    |> drop(columns: ["_start", "_stop"])
+
+VOL = from(bucket: input.bucket)
+    |> range(start: -task.every)
+    |> filter(fn: (r) => r["_measurement"] == input.measurement)
+    |> filter(fn: (r) => r["_field"] == "Volume")
     |> drop(columns: ["_start", "_stop"])
 
 DATA
@@ -31,5 +36,12 @@ DATA
     |> last()
     |> map(fn: (r) => ({r with _time: time}))
     |> set(key: "_field", value: "Close")
+    |> set(key: "_measurement", value: output.measurement)
+    |> to(bucket: output.bucket)
+
+VOL
+    |> last()
+    |> map(fn: (r) => ({r with _time: time}))
+    |> set(key: "_field", value: "Volume")
     |> set(key: "_measurement", value: output.measurement)
     |> to(bucket: output.bucket)
