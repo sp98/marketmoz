@@ -32,8 +32,9 @@ func (o *Order) Execute(t *Trade) error {
 		switch t.nxtPos {
 		case ENTER_LONG, ENTER_SHORT:
 			// res, err = t.KClient.PlaceOrder("regular", *t.OrderParams)
-			// TODO: remove fake error and place orders
-			err = fmt.Errorf("fake error")
+			// TODO: remove fake response and place order
+			err = nil
+			res = kiteconnect.OrderResponse{}
 		case EXIT_LONG, EXIT_SHORT:
 			//t.KClient.ExitOrder("regular", "", "")
 			Logger.Info("TODO: Implement EXIT_LONG and EXIT_SHORT. Return")

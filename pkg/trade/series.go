@@ -57,6 +57,7 @@ func getSeries(t *Trade) (*techan.TimeSeries, error) {
 		candle.ClosePrice = big.NewFromString(fmt.Sprintf("%f", datum.Close))
 		candle.MaxPrice = big.NewFromString(fmt.Sprintf("%f", datum.High))
 		candle.MinPrice = big.NewFromString(fmt.Sprintf("%f", datum.Low))
+		candle.Volume = big.NewFromString(fmt.Sprintf("%f", datum.Volume))
 		series.AddCandle(candle)
 	}
 

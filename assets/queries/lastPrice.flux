@@ -1,4 +1,4 @@
-input = {bucket: "${INPUT_BUCKET}", measurement: "${INPUT_MEASUREMENT}", every: "${INPUT_EVERY}"}
+input = {bucket: "${INPUT_BUCKET}", measurement: "${INPUT_MEASUREMENT}", every: ${INPUT_EVERY}}
 
 from(bucket: input.bucket)
     |> range(start: -input.every)

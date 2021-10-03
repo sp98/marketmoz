@@ -22,6 +22,7 @@ import (
 	"github.com/sp98/marketmoz/pkg/data"
 	"github.com/sp98/marketmoz/pkg/db/influx"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var organization string
@@ -39,11 +40,17 @@ var ohlcCmd = &cobra.Command{
 		db := influx.NewDB(ctx, organization, common.INFLUXDB_URL, common.INFLUXDB_TOKEN)
 		defer db.Client.Close()
 		instrument := data.NewInstrument("", "", exchange, "", segment, token)
+		//query, _ := trade.GetTestQuery()
 		query, err := instrument.GetDSQuery(cadence, common.OHLC_QUERY_ASSET)
 		if err != nil {
 			return
 		}
-		instrument.GetOHLC(db, query)
+		data, err := instrument.GetOHLC(db, query)
+		if err != nil {
+			Logger.Error("failed to get ohlc data", zap.Error(err))
+			return
+		}
+		Logger.Info("OHCL data", zap.Any("data", data))
 	},
 }
 

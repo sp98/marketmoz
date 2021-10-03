@@ -65,6 +65,7 @@ func (el *EnterLong) Execute(t *Trade) error {
 			t.nxtPos = ENTER_SHORT
 		}
 	}
+
 	if el.next != nil {
 		return el.next.Execute(t)
 	}
