@@ -50,6 +50,7 @@ func startFileFetcher() error {
 			high, _ := strconv.ParseFloat(l[4], 64)
 			low, _ := strconv.ParseFloat(l[5], 64)
 			close, _ := strconv.ParseFloat(l[6], 64)
+			vol, _ := strconv.ParseFloat(l[8], 64)
 
 			// keep string to use with techan
 
@@ -64,6 +65,7 @@ func startFileFetcher() error {
 			for _, price := range lastPriceList {
 				fields := map[string]interface{}{
 					"LastPrice": price,
+					"Volume":    vol,
 				}
 
 				Logger.Info("Tick", zap.Any("Last Price", fields["LastPrice"]))
